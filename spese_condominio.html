@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Spese Condo">
+<meta name="theme-color" content="#2D4A3E">
+<title>Spese Condominio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg: #F5F2EB;
+  --card: #FEFCF8;
+  --text: #1A1713;
+  --muted: #7A7468;
+  --accent: #2D4A3E;
+  --accent2: #C4873A;
+  --danger: #B84040;
+  --success: #2D7A4F;
+  --border: rgba(26,23,19,0.12);
+  --radius: 14px;
+  --shadow: 0 2px 16px rgba(26,23,19,0.08);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html, body {
+  height: 100%;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding-bottom: calc(80px + var(--safe-bottom));
+  min-height: 100vh;
+}
+
+.header {
+  background: var(--accent);
+  padding: calc(28px + var(--safe-top)) 20px 0;
+  color: white;
+}
+.header-inner { padding-bottom: 16px; }
+.header h1 { font-family: 'DM Serif Display', serif; font-size: 24px; font-weight: 400; margin-bottom: 3px; }
+.header p { font-size: 13px; opacity: 0.65; }
+
+.tab-bar {
+  background: var(--accent);
+  display: flex;
+  padding: 0 16px 16px;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab {
+  padding: 7px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: rgba(255,255,255,0.15);
+  color: white;
+  white-space: nowrap;
+  transition: background 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.tab.active { background: white; color: var(--accent); }
+
+.section { padding: 16px 16px 0; }
+
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.summary-card { background: var(--card); border-radius: var(--radius); padding: 14px; border: 0.5px solid var(--border); }
+.summary-card .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.summary-card .value { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); }
+.summary-card .value.danger { color: var(--danger); }
+.summary-card .value.success { color: var(--success); }
+
+.filter-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 2px; }
+.filter-row::-webkit-scrollbar { display: none; }
+.filter-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  border: 0.5px solid var(--border);
+  background: var(--card);
+  color: var(--muted);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.filter-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+.spesa-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 0.5px solid var(--border);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  transition: box-shadow 0.2s;
+}
+.spesa-card.scaduta { border-left: 3px solid var(--danger); }
+.spesa-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.spesa-nome { font-weight: 500; font-size: 15px; line-height: 1.3; }
+.spesa-importo { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--accent); white-space: nowrap; }
+.spesa-meta { display: flex; gap: 6px; align-items: center; margin-top: 7px; flex-wrap: wrap; }
+.badge { font-size: 11px; padding: 3px 8px; border-radius: 10px; font-weight: 500; }
+.badge.casa1 { background: #E8F0ED; color: #2D4A3E; }
+.badge.montagna { background: #FBF0E4; color: #7A4A10; }
+.badge.pagata { background: #E6F4EC; color: #2D7A4F; }
+.badge.nonpagata { background: #FAEAEA; color: #B84040; }
+.spesa-date { font-size: 12px; color: var(--muted); }
+.spesa-iban { font-size: 12px; color: var(--muted); font-family: monospace; margin-top: 5px; letter-spacing: 0.3px; }
+.spesa-iban span { color: var(--text); }
+.spesa-attach { font-size: 11px; color: var(--accent); margin-top: 4px; }
+.scadenza-warning { font-size: 11px; color: var(--danger); margin-top: 4px; font-weight: 500; }
+
+.spesa-actions { display: flex; gap: 8px; margin-top: 10px; border-top: 0.5px solid var(--border); padding-top: 10px; }
+.btn-small {
+  flex: 1;
+  padding: 8px 4px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 0.5px solid var(--border);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--card);
+  color: var(--text);
+}
+.btn-small.success { background: var(--success); color: white; border-color: var(--success); }
+.btn-small.danger { background: var(--danger); color: white; border-color: var(--danger); }
+
+.fab {
+  position: fixed;
+  bottom: calc(24px + var(--safe-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 280px;
+  background: var(--accent2);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 15px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(196,135,58,0.4);
+  z-index: 50;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(26,23,19,0.55);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--card);
+  border-radius: 20px 20px 0 0;
+  width: 100%; max-width: 480px;
+  padding: 8px 20px calc(28px + var(--safe-bottom));
+  max-height: 92vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 20px; }
+.modal h2 { font-family: 'DM Serif Display', serif; font-size: 20px; font-weight: 400; margin-bottom: 20px; }
+
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 16px;
+  font-family: 'DM Sans', sans-serif;
+  background: white;
+  color: var(--text);
+  appearance: none;
+  -webkit-appearance: none;
+}
+.form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); }
+.iban-input { font-family: monospace !important; letter-spacing: 1px; text-transform: uppercase; font-size: 14px !important; }
+.iban-hint { font-size: 11px; margin-top: 5px; color: var(--muted); }
+.iban-hint.valid { color: var(--success); }
+.iban-hint.invalid { color: var(--danger); }
+
+.toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
+.toggle-label { font-size: 16px; color: var(--text); }
+.toggle {
+  width: 50px; height: 30px;
+  background: #D1CBC0;
+  border-radius: 15px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.25s;
+  border: none;
+  flex-shrink: 0;
+}
+.toggle::after {
+  content: '';
+  position: absolute;
+  width: 24px; height: 24px;
+  background: white;
+  border-radius: 50%;
+  top: 3px; left: 3px;
+  transition: transform 0.25s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+.toggle.on { background: var(--success); }
+.toggle.on::after { transform: translateX(20px); }
+
+.btn-save {
+  width: 100%; padding: 15px;
+  background: var(--accent); color: white;
+  border: none; border-radius: 12px;
+  font-size: 16px; font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer; margin-top: 10px;
+}
+.btn-cancel {
+  width: 100%; padding: 13px;
+  background: none; border: none;
+  color: var(--muted); font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer; margin-top: 4px;
+}
+
+.empty { text-align: center; padding: 48px 20px; color: var(--muted); }
+.empty-icon { font-size: 48px; margin-bottom: 12px; }
+.empty p { font-size: 15px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <div class="header-inner">
+      <h1>Spese Condominio</h1>
+      <p>Gestisci le spese dei tuoi immobili</p>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('tutte', this)">Tutte</button>
+    <button class="tab" onclick="switchTab('casa1', this)">Prima casa</button>
+    <button class="tab" onclick="switchTab('montagna', this)">Montagna</button>
+  </div>
+
+  <div class="section">
+    <div class="summary-grid">
+      <div class="summary-card"><div class="label">Totale spese</div><div class="value" id="tot-totale">€0,00</div></div>
+      <div class="summary-card"><div class="label">Da pagare</div><div class="value danger" id="tot-nonpagato">€0,00</div></div>
+      <div class="summary-card"><div class="label">Pagate</div><div class="value success" id="tot-pagato">€0,00</div></div>
+      <div class="summary-card"><div class="label">In scadenza</div><div class="value danger" id="tot-scadenza">0</div></div>
+    </div>
+
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="setFilter('tutte', this)">Tutte</button>
+      <button class="filter-btn" onclick="setFilter('pagate', this)">Pagate</button>
+      <button class="filter-btn" onclick="setFilter('nonpagate', this)">Da pagare</button>
+      <button class="filter-btn" onclick="setFilter('scadute', this)">Scadute</button>
+    </div>
+
+    <div id="lista-spese"></div>
+  </div>
+</div>
+
+<button class="fab" onclick="openModal()">+ Nuova spesa</button>
+
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-handle"></div>
+    <h2 id="modal-title">Nuova spesa</h2>
+
+    <div class="form-group">
+      <label>Descrizione</label>
+      <input type="text" id="f-nome" placeholder="es. Manutenzione ascensore" autocomplete="off" />
+    </div>
+    <div class="form-group">
+      <label>Importo (€)</label>
+      <input type="number" id="f-importo" placeholder="0,00" step="0.01" min="0" inputmode="decimal" />
+    </div>
+    <div class="form-group">
+      <label>IBAN beneficiario</label>
+      <input type="text" id="f-iban" class="iban-input" placeholder="IT60 X054 2811 1010 0000 0123 456" maxlength="34" oninput="formatIban(this)" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" />
+      <div class="iban-hint" id="iban-hint">Facoltativo — IBAN del condominio o del beneficiario</div>
+    </div>
+    <div class="form-group">
+      <label>Immobile</label>
+      <select id="f-immobile">
+        <option value="casa1">Prima casa</option>
+        <option value="montagna">Casa di montagna</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Data scadenza</label>
+      <input type="date" id="f-scadenza" />
+    </div>
+    <div class="form-group">
+      <div class="toggle-row">
+        <span class="toggle-label">Già pagata</span>
+        <button class="toggle" id="toggle-pagata" onclick="togglePagata()"></button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Documento allegato</label>
+      <input type="file" id="f-file" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this)" />
+      <div class="iban-hint" id="attach-name"></div>
+    </div>
+
+    <button class="btn-save" onclick="saveSpesa()">Salva</button>
+    <button class="btn-cancel" onclick="closeModal()">Annulla</button>
+  </div>
+</div>
+
+<script>
+let spese = JSON.parse(localStorage.getItem('spese_condo_v2') || '[]');
+let tabAttivo = 'tutte';
+let filtroAttivo = 'tutte';
+let pagataToggle = false;
+let fileAllegato = null;
+let editId = null;
+
+function salva() { localStorage.setItem('spese_condo_v2', JSON.stringify(spese)); }
+function oggi() { return new Date().toISOString().split('T')[0]; }
+function isScaduta(s) { return !s.pagata && s.scadenza && s.scadenza < oggi(); }
+function isInScadenza(s) {
+  if (s.pagata || !s.scadenza) return false;
+  const diff = (new Date(s.scadenza) - new Date()) / (1000*60*60*24);
+  return diff >= 0 && diff <= 7;
+}
+function fmt(n) {
+  return '€' + Number(n).toLocaleString('it-IT', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+function fmtDate(d) {
+  if (!d) return '';
+  const [y,m,dd] = d.split('-');
+  return `${dd}/${m}/${y}`;
+}
+
+function formatIban(input) {
+  let val = input.value.replace(/\s/g, '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  input.value = val.match(/.{1,4}/g)?.join(' ') || val;
+  const hint = document.getElementById('iban-hint');
+  if (!val) { hint.textContent = 'Facoltativo — IBAN del condominio o del beneficiario'; hint.className = 'iban-hint'; return; }
+  if (val.length < 15) { hint.textContent = 'IBAN troppo corto'; hint.className = 'iban-hint invalid'; return; }
+  const rearranged = val.slice(4) + val.slice(0, 4);
+  const numeric = rearranged.split('').map(c => isNaN(c) ? (c.charCodeAt(0) - 55).toString() : c).join('');
+  let rem = 0;
+  for (let i = 0; i < numeric.length; i++) rem = (rem * 10 + parseInt(numeric[i])) % 97;
+  if (rem === 1) { hint.textContent = 'IBAN valido ✓'; hint.className = 'iban-hint valid'; }
+  else { hint.textContent = 'IBAN non valido — controlla i dati'; hint.className = 'iban-hint invalid'; }
+}
+
+function renderLista() {
+  let lista = spese.slice();
+  if (tabAttivo !== 'tutte') lista = lista.filter(s => s.immobile === tabAttivo);
+  if (filtroAttivo === 'pagate') lista = lista.filter(s => s.pagata);
+  else if (filtroAttivo === 'nonpagate') lista = lista.filter(s => !s.pagata);
+  else if (filtroAttivo === 'scadute') lista = lista.filter(s => isScaduta(s));
+  lista.sort((a,b) => (a.scadenza||'9999') < (b.scadenza||'9999') ? -1 : 1);
+
+  let totale = 0, pagato = 0, nonpagato = 0, inScad = 0;
+  spese.forEach(s => {
+    const imp = parseFloat(s.importo) || 0;
+    totale += imp; if (s.pagata) pagato += imp; else nonpagato += imp;
+    if (isScaduta(s) || isInScadenza(s)) inScad++;
+  });
+  document.getElementById('tot-totale').textContent = fmt(totale);
+  document.getElementById('tot-pagato').textContent = fmt(pagato);
+  document.getElementById('tot-nonpagato').textContent = fmt(nonpagato);
+  document.getElementById('tot-scadenza').textContent = inScad;
+
+  const el = document.getElementById('lista-spese');
+  if (!lista.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📋</div><p>Nessuna spesa trovata</p></div>`;
+    return;
+  }
+  el.innerHTML = lista.map(s => {
+    const scad = isScaduta(s), vicina = isInScadenza(s);
+    return `<div class="spesa-card ${scad ? 'scaduta' : ''}">
+      <div class="spesa-top">
+        <div class="spesa-nome">${escHtml(s.nome)}</div>
+        <div class="spesa-importo">${fmt(s.importo)}</div>
+      </div>
+      <div class="spesa-meta">
+        <span class="badge ${s.immobile}">${s.immobile === 'casa1' ? 'Prima casa' : 'Montagna'}</span>
+        <span class="badge ${s.pagata ? 'pagata' : 'nonpagata'}">${s.pagata ? 'Pagata' : 'Da pagare'}</span>
+        ${s.scadenza ? `<span class="spesa-date">Scad. ${fmtDate(s.scadenza)}</span>` : ''}
+      </div>
+      ${s.iban ? `<div class="spesa-iban">IBAN <span>${escHtml(s.iban)}</span></div>` : ''}
+      ${scad ? '<div class="scadenza-warning">⚠ Scadenza superata</div>' : ''}
+      ${vicina ? '<div class="scadenza-warning">⚠ Scade entro 7 giorni</div>' : ''}
+      ${s.fileName ? `<div class="spesa-attach">📎 ${escHtml(s.fileName)}</div>` : ''}
+      <div class="spesa-actions">
+        ${!s.pagata
+          ? `<button class="btn-small success" onclick="marcaPagata('${s.id}')">Segna pagata</button>`
+          : `<button class="btn-small" onclick="marcaNonPagata('${s.id}')">Non pagata</button>`}
+        <button class="btn-small" onclick="editSpesa('${s.id}')">Modifica</button>
+        <button class="btn-small danger" onclick="eliminaSpesa('${s.id}')">Elimina</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function switchTab(tab, btn) {
+  tabAttivo = tab;
+  document.querySelectorAll('.tab-bar .tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLista();
+}
+
+function setFilter(f, btn) {
+  filtroAttivo = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLista();
+}
+
+function marcaPagata(id) { const s = spese.find(x=>x.id===id); if(s){s.pagata=true; salva(); renderLista();} }
+function marcaNonPagata(id) { const s = spese.find(x=>x.id===id); if(s){s.pagata=false; salva(); renderLista();} }
+function eliminaSpesa(id) { if(confirm('Eliminare questa spesa?')){spese=spese.filter(x=>x.id!==id); salva(); renderLista();} }
+function editSpesa(id) { openModal(id); }
+
+function openModal(id) {
+  editId = id || null;
+  pagataToggle = false;
+  fileAllegato = null;
+  document.getElementById('attach-name').textContent = '';
+  document.getElementById('iban-hint').textContent = 'Facoltativo — IBAN del condominio o del beneficiario';
+  document.getElementById('iban-hint').className = 'iban-hint';
+  document.getElementById('modal-title').textContent = id ? 'Modifica spesa' : 'Nuova spesa';
+  if (id) {
+    const s = spese.find(x=>x.id===id);
+    document.getElementById('f-nome').value = s.nome;
+    document.getElementById('f-importo').value = s.importo;
+    document.getElementById('f-iban').value = s.iban || '';
+    document.getElementById('f-immobile').value = s.immobile;
+    document.getElementById('f-scadenza').value = s.scadenza || '';
+    pagataToggle = s.pagata;
+    document.getElementById('toggle-pagata').className = 'toggle' + (pagataToggle ? ' on' : '');
+    if (s.fileName) document.getElementById('attach-name').textContent = s.fileName;
+    if (s.iban) formatIban(document.getElementById('f-iban'));
+  } else {
+    document.getElementById('f-nome').value = '';
+    document.getElementById('f-importo').value = '';
+    document.getElementById('f-iban').value = '';
+    document.getElementById('f-immobile').value = 'casa1';
+    document.getElementById('f-scadenza').value = '';
+    document.getElementById('toggle-pagata').className = 'toggle';
+  }
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('f-nome').focus(), 350);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  editId = null;
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+function togglePagata() {
+  pagataToggle = !pagataToggle;
+  document.getElementById('toggle-pagata').className = 'toggle' + (pagataToggle ? ' on' : '');
+}
+
+function handleFile(input) {
+  if (input.files[0]) {
+    fileAllegato = { name: input.files[0].name };
+    document.getElementById('attach-name').textContent = '📎 ' + input.files[0].name;
+  }
+}
+
+function saveSpesa() {
+  const nome = document.getElementById('f-nome').value.trim();
+  const importo = document.getElementById('f-importo').value;
+  const iban = document.getElementById('f-iban').value.trim();
+  const immobile = document.getElementById('f-immobile').value;
+  const scadenza = document.getElementById('f-scadenza').value;
+  if (!nome || !importo) { alert('Inserisci almeno descrizione e importo'); return; }
+  if (editId) {
+    const s = spese.find(x=>x.id===editId);
+    Object.assign(s, { nome, importo: parseFloat(importo), iban, immobile, scadenza, pagata: pagataToggle });
+    if (fileAllegato) s.fileName = fileAllegato.name;
+  } else {
+    spese.push({
+      id: Date.now().toString(), nome,
+      importo: parseFloat(importo), iban, immobile, scadenza,
+      pagata: pagataToggle,
+      fileName: fileAllegato ? fileAllegato.name : null,
+      creata: oggi()
+    });
+  }
+  salva(); closeModal(); renderLista();
+}
+
+renderLista();
+</script>
+</body>
+</html>
