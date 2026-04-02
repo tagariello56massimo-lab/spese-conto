@@ -95,36 +95,36 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 <body>
 <div class="app">
 <div class="header">
-  <div class="header-inner">
-    <div>
-      <h1>Spese Condominio</h1>
-      <p>Gestisci le spese dei tuoi immobili</p>
-    </div>
-    <div class="sync-status" id="sync-status">
-      <div class="sync-dot loading" id="sync-dot"></div>
-      <span id="sync-text">Connessione...</span>
-    </div>
-  </div>
+ <div class="header-inner">
+   <div>
+     <h1>Spese Condominio</h1>
+     <p>Gestisci le spese dei tuoi immobili</p>
+   </div>
+   <div class="sync-status" id="sync-status">
+     <div class="sync-dot loading" id="sync-dot"></div>
+     <span id="sync-text">Connessione...</span>
+   </div>
+ </div>
 </div>
 <div class="tab-bar">
-  <button class="tab active" id="tab-tutte" onclick="switchTab('tutte')">Tutte</button>
-  <button class="tab" id="tab-casa1" onclick="switchTab('casa1')">Prima casa</button>
-  <button class="tab" id="tab-montagna" onclick="switchTab('montagna')">Montagna</button>
+ <button class="tab active" id="tab-tutte" onclick="switchTab('tutte')">Tutte</button>
+ <button class="tab" id="tab-casa1" onclick="switchTab('casa1')">Prima casa</button>
+ <button class="tab" id="tab-montagna" onclick="switchTab('montagna')">Montagna</button>
 </div>
 <div class="section">
-  <div class="summary-grid">
-    <div class="summary-card"><div class="label">Totale spese</div><div class="value" id="tot-totale">€0,00</div></div>
-    <div class="summary-card"><div class="label">Da pagare</div><div class="value danger" id="tot-nonpagato">€0,00</div></div>
-    <div class="summary-card"><div class="label">Pagate</div><div class="value success" id="tot-pagato">€0,00</div></div>
-    <div class="summary-card"><div class="label">In scadenza</div><div class="value danger" id="tot-scadenza">0</div></div>
-  </div>
-  <div class="filter-row">
-    <button class="filter-btn active" id="f-tutte" onclick="setFilter('tutte')">Tutte</button>
-    <button class="filter-btn" id="f-pagate" onclick="setFilter('pagate')">Pagate</button>
-    <button class="filter-btn" id="f-nonpagate" onclick="setFilter('nonpagate')">Da pagare</button>
-    <button class="filter-btn" id="f-scadute" onclick="setFilter('scadute')">Scadute</button>
-  </div>
-  <div id="lista-spese"></div>
+ <div class="summary-grid">
+   <div class="summary-card"><div class="label">Totale spese</div><div class="value" id="tot-totale">€0,00</div></div>
+   <div class="summary-card"><div class="label">Da pagare</div><div class="value danger" id="tot-nonpagato">€0,00</div></div>
+   <div class="summary-card"><div class="label">Pagate</div><div class="value success" id="tot-pagato">€0,00</div></div>
+   <div class="summary-card"><div class="label">In scadenza</div><div class="value danger" id="tot-scadenza">0</div></div>
+ </div>
+ <div class="filter-row">
+   <button class="filter-btn active" id="f-tutte" onclick="setFilter('tutte')">Tutte</button>
+   <button class="filter-btn" id="f-pagate" onclick="setFilter('pagate')">Pagate</button>
+   <button class="filter-btn" id="f-nonpagate" onclick="setFilter('nonpagate')">Da pagare</button>
+   <button class="filter-btn" id="f-scadute" onclick="setFilter('scadute')">Scadute</button>
+ </div>
+ <div id="lista-spese"></div>
 </div>
 </div>
 
@@ -132,45 +132,45 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 
 <div class="modal-overlay" id="modal-overlay" onclick="overlayClick(event)">
 <div class="modal" id="modal">
-  <div class="modal-handle"></div>
-  <h2 id="modal-title">Nuova spesa</h2>
-  <div class="form-group">
-    <label>Descrizione</label>
-    <input type="text" id="f-nome" placeholder="es. Manutenzione ascensore" autocomplete="off" />
-  </div>
-  <div class="form-group">
-    <label>Importo (€)</label>
-    <input type="number" id="f-importo" placeholder="0,00" step="0.01" min="0" inputmode="decimal" />
-  </div>
-  <div class="form-group">
-    <label>IBAN beneficiario</label>
-    <input type="text" id="f-iban" class="iban-input" placeholder="IT60 X054 2811 1010 0000 0123 456" maxlength="34" oninput="formatIban(this)" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" />
-    <div class="hint" id="iban-hint">Facoltativo</div>
-  </div>
-  <div class="form-group">
-    <label>Immobile</label>
-    <select id="f-immobile">
-      <option value="casa1">Prima casa</option>
-      <option value="montagna">Casa di montagna</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label>Data scadenza</label>
-    <input type="date" id="f-scadenza" />
-  </div>
-  <div class="form-group">
-    <div class="toggle-row">
-      <span class="toggle-label">Già pagata</span>
-      <button class="toggle" id="toggle-pagata" onclick="togglePagata()"></button>
-    </div>
-  </div>
-  <div class="form-group">
-    <label>Documento allegato</label>
-    <input type="file" id="f-file" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this)" />
-    <div class="hint" id="attach-name"></div>
-  </div>
-  <button class="btn-save" onclick="saveSpesa()">Salva</button>
-  <button class="btn-cancel" onclick="closeModal()">Annulla</button>
+ <div class="modal-handle"></div>
+ <h2 id="modal-title">Nuova spesa</h2>
+ <div class="form-group">
+   <label>Descrizione</label>
+   <input type="text" id="f-nome" placeholder="es. Manutenzione ascensore" autocomplete="off" />
+ </div>
+ <div class="form-group">
+   <label>Importo (€)</label>
+   <input type="number" id="f-importo" placeholder="0,00" step="0.01" min="0" inputmode="decimal" />
+ </div>
+ <div class="form-group">
+   <label>IBAN beneficiario</label>
+   <input type="text" id="f-iban" class="iban-input" placeholder="IT60 X054 2811 1010 0000 0123 456" maxlength="34" oninput="formatIban(this)" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" />
+   <div class="hint" id="iban-hint">Facoltativo</div>
+ </div>
+ <div class="form-group">
+   <label>Immobile</label>
+   <select id="f-immobile">
+     <option value="casa1">Prima casa</option>
+     <option value="montagna">Casa di montagna</option>
+   </select>
+ </div>
+ <div class="form-group">
+   <label>Data scadenza</label>
+   <input type="date" id="f-scadenza" />
+ </div>
+ <div class="form-group">
+   <div class="toggle-row">
+     <span class="toggle-label">Già pagata</span>
+     <button class="toggle" id="toggle-pagata" onclick="togglePagata()"></button>
+   </div>
+ </div>
+ <div class="form-group">
+   <label>Documento allegato</label>
+   <input type="file" id="f-file" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this)" />
+   <div class="hint" id="attach-name"></div>
+ </div>
+ <button class="btn-save" onclick="saveSpesa()">Salva</button>
+ <button class="btn-cancel" onclick="closeModal()">Annulla</button>
 </div>
 </div>
 
@@ -179,13 +179,13 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
- apiKey: "AIzaSyBFzRfzZUUNSSJ3w08zG1K08aMpTpSJ0zI",
- authDomain: "spese-conto-d1775.firebaseapp.com",
- projectId: "spese-conto-d1775",
- storageBucket: "spese-conto-d1775.firebasestorage.app",
- messagingSenderId: "989458136531",
- appId: "1:989458136531:web:7bdcc52b4e0bc9de2ac326",
- measurementId: "G-SLKWTVHZD6"
+apiKey: "AIzaSyBFzRfzZUUNSSJ3w08zG1K08aMpTpSJ0zI",
+authDomain: "spese-conto-d1775.firebaseapp.com",
+projectId: "spese-conto-d1775",
+storageBucket: "spese-conto-d1775.firebasestorage.app",
+messagingSenderId: "989458136531",
+appId: "1:989458136531:web:7bdcc52b4e0bc9de2ac326",
+measurementId: "G-SLKWTVHZD6"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -200,218 +200,217 @@ window._fileAllegato = null;
 window._editId = null;
 
 function setSyncStatus(stato, testo) {
- var dot = document.getElementById('sync-dot');
- var txt = document.getElementById('sync-text');
- dot.className = 'sync-dot ' + stato;
- txt.textContent = testo;
+var dot = document.getElementById('sync-dot');
+var txt = document.getElementById('sync-text');
+dot.className = 'sync-dot ' + stato;
+txt.textContent = testo;
 }
 
 onSnapshot(speseRef, function(snapshot) {
- window._spese = [];
- snapshot.forEach(function(docSnap) {
-   var d = docSnap.data();
-   d.id = docSnap.id;
-   window._spese.push(d);
- });
- setSyncStatus('ok', 'Sincronizzato');
- renderLista();
+window._spese = [];
+snapshot.forEach(function(docSnap) {
+  var d = docSnap.data();
+  d.id = docSnap.id;
+  window._spese.push(d);
+});
+setSyncStatus('ok', 'Sincronizzato');
+renderLista();
 }, function(error) {
- setSyncStatus('err', 'Errore connessione');
- console.error(error);
+setSyncStatus('err', 'Errore connessione');
+console.error(error);
 });
 
 window.marcaPagata = async function(id) {
- await updateDoc(doc(db, "spese", id), { pagata: true });
+await updateDoc(doc(db, "spese", id), { pagata: true });
 };
 window.marcaNonPagata = async function(id) {
- await updateDoc(doc(db, "spese", id), { pagata: false });
+await updateDoc(doc(db, "spese", id), { pagata: false });
 };
 window.eliminaSpesa = async function(id) {
- if (confirm('Eliminare questa spesa?')) {
-   await deleteDoc(doc(db, "spese", id));
- }
+if (confirm('Eliminare questa spesa?')) {
+  await deleteDoc(doc(db, "spese", id));
+}
 };
 window.editSpesa = function(id) { openModal(id); };
 
 window.saveSpesa = async function() {
- var nome = document.getElementById('f-nome').value.trim();
- var importo = document.getElementById('f-importo').value;
- var iban = document.getElementById('f-iban').value.trim();
- var immobile = document.getElementById('f-immobile').value;
- var scadenza = document.getElementById('f-scadenza').value;
- if (!nome || !importo) { alert('Inserisci almeno descrizione e importo'); return; }
- setSyncStatus('loading', 'Salvataggio...');
- if (window._editId) {
-   await updateDoc(doc(db, "spese", window._editId), {
-     nome: nome, importo: parseFloat(importo), iban: iban,
-     immobile: immobile, scadenza: scadenza, pagata: window._pagataToggle,
-     fileName: window._fileAllegato ? window._fileAllegato.name : (window._spese.find(function(x){return x.id===window._editId;}) || {}).fileName || null
-   });
- } else {
-   await addDoc(speseRef, {
-     nome: nome, importo: parseFloat(importo), iban: iban,
-     immobile: immobile, scadenza: scadenza, pagata: window._pagataToggle,
-     fileName: window._fileAllegato ? window._fileAllegato.name : null,
-     creata: oggi(), timestamp: serverTimestamp()
-   });
- }
- closeModal();
+var nome = document.getElementById('f-nome').value.trim();
+var importo = document.getElementById('f-importo').value;
+var iban = document.getElementById('f-iban').value.trim();
+var immobile = document.getElementById('f-immobile').value;
+var scadenza = document.getElementById('f-scadenza').value;
+if (!nome || !importo) { alert('Inserisci almeno descrizione e importo'); return; }
+setSyncStatus('loading', 'Salvataggio...');
+if (window._editId) {
+  await updateDoc(doc(db, "spese", window._editId), {
+    nome: nome, importo: parseFloat(importo), iban: iban,
+    immobile: immobile, scadenza: scadenza, pagata: window._pagataToggle,
+    fileName: window._fileAllegato ? window._fileAllegato.name : (window._spese.find(function(x){return x.id===window._editId;}) || {}).fileName || null
+  });
+} else {
+  await addDoc(speseRef, {
+    nome: nome, importo: parseFloat(importo), iban: iban,
+    immobile: immobile, scadenza: scadenza, pagata: window._pagataToggle,
+    fileName: window._fileAllegato ? window._fileAllegato.name : null,
+    creata: oggi(), timestamp: serverTimestamp()
+  });
+}
+closeModal();
 };
 
 function oggi() { return new Date().toISOString().split('T')[0]; }
 function isScaduta(s) { return !s.pagata && s.scadenza && s.scadenza < oggi(); }
 function isInScadenza(s) {
- if (s.pagata || !s.scadenza) return false;
- var diff = (new Date(s.scadenza) - new Date()) / (1000*60*60*24);
- return diff >= 0 && diff <= 7;
+if (s.pagata || !s.scadenza) return false;
+var diff = (new Date(s.scadenza) - new Date()) / (1000*60*60*24);
+return diff >= 0 && diff <= 7;
 }
 function fmt(n) {
- return '€' + Number(n).toLocaleString('it-IT', {minimumFractionDigits:2, maximumFractionDigits:2});
+return '€' + Number(n).toLocaleString('it-IT', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
 function fmtDate(d) {
- if (!d) return '';
- var p = d.split('-');
- return p[2]+'/'+p[1]+'/'+p[0];
+if (!d) return '';
+var p = d.split('-');
+return p[2]+'/'+p[1]+'/'+p[0];
 }
 function esc(str) {
- return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 window.switchTab = function(tab) {
- window._tabAttivo = tab;
- document.getElementById('tab-tutte').classList.toggle('active', tab === 'tutte');
- document.getElementById('tab-casa1').classList.toggle('active', tab === 'casa1');
- document.getElementById('tab-montagna').classList.toggle('active', tab === 'montagna');
- renderLista();
+window._tabAttivo = tab;
+document.getElementById('tab-tutte').classList.toggle('active', tab === 'tutte');
+document.getElementById('tab-casa1').classList.toggle('active', tab === 'casa1');
+document.getElementById('tab-montagna').classList.toggle('active', tab === 'montagna');
+renderLista();
 };
 
 window.setFilter = function(f) {
- window._filtroAttivo = f;
- ['tutte','pagate','nonpagate','scadute'].forEach(function(x) {
-   document.getElementById('f-'+x).classList.toggle('active', x === f);
- });
- renderLista();
+window._filtroAttivo = f;
+['tutte','pagate','nonpagate','scadute'].forEach(function(x) {
+  document.getElementById('f-'+x).classList.toggle('active', x === f);
+});
+renderLista();
 };
 
 function renderLista() {
- var lista = window._spese.slice();
- if (window._tabAttivo === 'casa1') lista = lista.filter(function(s){ return s.immobile === 'casa1'; });
- else if (window._tabAttivo === 'montagna') lista = lista.filter(function(s){ return s.immobile === 'montagna'; });
- if (window._filtroAttivo === 'pagate') lista = lista.filter(function(s){ return s.pagata; });
- else if (window._filtroAttivo === 'nonpagate') lista = lista.filter(function(s){ return !s.pagata; });
- else if (window._filtroAttivo === 'scadute') lista = lista.filter(function(s){ return isScaduta(s); });
- lista.sort(function(a,b) {
-   var da = a.scadenza || '9999'; var db2 = b.scadenza || '9999';
-   return da < db2 ? -1 : da > db2 ? 1 : 0;
- });
- var listaTab = window._tabAttivo === 'tutte' ? window._spese : window._spese.filter(function(s){ return s.immobile === window._tabAttivo; });
- var totale = 0, pagato = 0, nonpagato = 0, inScad = 0;
- listaTab.forEach(function(s) {
-   var imp = parseFloat(s.importo) || 0;
-   totale += imp;
-   if (s.pagata) pagato += imp; else nonpagato += imp;
-   if (isScaduta(s) || isInScadenza(s)) inScad++;
- });
- document.getElementById('tot-totale').textContent = fmt(totale);
- document.getElementById('tot-pagato').textContent = fmt(pagato);
- document.getElementById('tot-nonpagato').textContent = fmt(nonpagato);
- document.getElementById('tot-scadenza').textContent = inScad;
- var el = document.getElementById('lista-spese');
- if (!lista.length) {
-   el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Nessuna spesa trovata</p></div>';
-   return;
- }
- el.innerHTML = lista.map(function(s) {
-   var scad = isScaduta(s);
-   var vicina = isInScadenza(s);
-   return '<div class="spesa-card' + (scad ? ' scaduta' : '') + '">'
-     + '<div class="spesa-top">'
-     + '<div class="spesa-nome">' + esc(s.nome) + '</div>'
-     + '<div class="spesa-importo">' + fmt(s.importo) + '</div>'
-     + '</div>'
-     + '<div class="spesa-meta">'
-     + '<span class="badge ' + s.immobile + '">' + (s.immobile === 'casa1' ? 'Prima casa' : 'Montagna') + '</span>'
-     + '<span class="badge ' + (s.pagata ? 'pagata' : 'nonpagata') + '">' + (s.pagata ? 'Pagata' : 'Da pagare') + '</span>'
-     + (s.scadenza ? '<span class="spesa-date">Scad. ' + fmtDate(s.scadenza) + '</span>' : '')
-     + '</div>'
-     + (s.iban ? '<div class="spesa-iban">IBAN <span>' + esc(s.iban) + '</span></div>' : '')
-     + (scad ? '<div class="scadenza-warning">⚠ Scadenza superata</div>' : '')
-     + (vicina ? '<div class="scadenza-warning">⚠ Scade entro 7 giorni</div>' : '')
-     + (s.fileName ? '<div class="spesa-attach">📎 ' + esc(s.fileName) + '</div>' : '')
-     + '<div class="spesa-actions">'
-     + (!s.pagata
-         ? '<button class="btn-small success" onclick="marcaPagata(\'' + s.id + '\')">Segna pagata</button>'
-         : '<button class="btn-small" onclick="marcaNonPagata(\'' + s.id + '\')">Non pagata</button>')
-     + '<button class="btn-small" onclick="editSpesa(\'' + s.id + '\')">Modifica</button>'
-     + '<button class="btn-small danger" onclick="eliminaSpesa(\'' + s.id + '\')">Elimina</button>'
-     + '</div></div>';
- }).join('');
+var lista = window._spese.slice();
+if (window._tabAttivo === 'casa1') lista = lista.filter(function(s){ return s.immobile === 'casa1'; });
+else if (window._tabAttivo === 'montagna') lista = lista.filter(function(s){ return s.immobile === 'montagna'; });
+if (window._filtroAttivo === 'pagate') lista = lista.filter(function(s){ return s.pagata; });
+else if (window._filtroAttivo === 'nonpagate') lista = lista.filter(function(s){ return !s.pagata; });
+else if (window._filtroAttivo === 'scadute') lista = lista.filter(function(s){ return isScaduta(s); });
+lista.sort(function(a,b) {
+  var da = a.scadenza || '9999'; var db2 = b.scadenza || '9999';
+  return da < db2 ? -1 : da > db2 ? 1 : 0;
+});
+var listaTab = window._tabAttivo === 'tutte' ? window._spese : window._spese.filter(function(s){ return s.immobile === window._tabAttivo; });
+var totale = 0, pagato = 0, nonpagato = 0, inScad = 0;
+listaTab.forEach(function(s) {
+  var imp = parseFloat(s.importo) || 0;
+  totale += imp;
+  if (s.pagata) pagato += imp; else nonpagato += imp;
+  if (isScaduta(s) || isInScadenza(s)) inScad++;
+});
+document.getElementById('tot-totale').textContent = fmt(totale);
+document.getElementById('tot-pagato').textContent = fmt(pagato);
+document.getElementById('tot-nonpagato').textContent = fmt(nonpagato);
+document.getElementById('tot-scadenza').textContent = inScad;
+var el = document.getElementById('lista-spese');
+if (!lista.length) {
+  el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Nessuna spesa trovata</p></div>';
+  return;
+}
+el.innerHTML = lista.map(function(s) {
+  var scad = isScaduta(s);
+  var vicina = isInScadenza(s);
+  return '<div class="spesa-card' + (scad ? ' scaduta' : '') + '">'
+    + '<div class="spesa-top">'
+    + '<div class="spesa-nome">' + esc(s.nome) + '</div>'
+    + '<div class="spesa-importo">' + fmt(s.importo) + '</div>'
+    + '</div>'
+    + '<div class="spesa-meta">'
+    + '<span class="badge ' + s.immobile + '">' + (s.immobile === 'casa1' ? 'Prima casa' : 'Montagna') + '</span>'
+    + '<span class="badge ' + (s.pagata ? 'pagata' : 'nonpagata') + '">' + (s.pagata ? 'Pagata' : 'Da pagare') + '</span>'
+    + (s.scadenza ? '<span class="spesa-date">Scad. ' + fmtDate(s.scadenza) + '</span>' : '')
+    + '</div>'
+    + (s.iban ? '<div class="spesa-iban">IBAN <span>' + esc(s.iban) + '</span></div>' : '')
+    + (scad ? '<div class="scadenza-warning">⚠ Scadenza superata</div>' : '')
+    + (vicina ? '<div class="scadenza-warning">⚠ Scade entro 7 giorni</div>' : '')
+    + (s.fileName ? '<div class="spesa-attach">📎 ' + esc(s.fileName) + '</div>' : '')
+    + '<div class="spesa-actions">'
+    + (!s.pagata
+        ? '<button class="btn-small success" onclick="marcaPagata(\'' + s.id + '\')">Segna pagata</button>'
+        : '<button class="btn-small" onclick="marcaNonPagata(\'' + s.id + '\')">Non pagata</button>')
+    + '<button class="btn-small" onclick="editSpesa(\'' + s.id + '\')">Modifica</button>'
+    + '<button class="btn-small danger" onclick="eliminaSpesa(\'' + s.id + '\')">Elimina</button>'
+    + '</div></div>';
+}).join('');
 }
 
 window.openModal = function(id) {
- window._editId = id || null;
- window._pagataToggle = false;
- window._fileAllegato = null;
- document.getElementById('attach-name').textContent = '';
- document.getElementById('iban-hint').textContent = 'Facoltativo';
- document.getElementById('iban-hint').className = 'hint';
- document.getElementById('modal-title').textContent = id ? 'Modifica spesa' : 'Nuova spesa';
- if (id) {
-   var s = window._spese.find(function(x){return x.id===id;});
-   document.getElementById('f-nome').value = s.nome;
-   document.getElementById('f-importo').value = s.importo;
-   document.getElementById('f-iban').value = s.iban || '';
-   document.getElementById('f-immobile').value = s.immobile;
-   document.getElementById('f-scadenza').value = s.scadenza || '';
-   window._pagataToggle = s.pagata;
-   if (s.fileName) document.getElementById('attach-name').textContent = '📎 ' + s.fileName;
- } else {
-   document.getElementById('f-nome').value = '';
-   document.getElementById('f-importo').value = '';
-   document.getElementById('f-iban').value = '';
-   document.getElementById('f-immobile').value = window._tabAttivo !== 'tutte' ? window._tabAttivo : 'casa1';
-   document.getElementById('f-scadenza').value = '';
- }
- document.getElementById('toggle-pagata').className = 'toggle' + (window._pagataToggle ? ' on' : '');
- document.getElementById('modal-overlay').classList.add('open');
+window._editId = id || null;
+window._pagataToggle = false;
+window._fileAllegato = null;
+document.getElementById('attach-name').textContent = '';
+document.getElementById('iban-hint').textContent = 'Facoltativo';
+document.getElementById('iban-hint').className = 'hint';
+document.getElementById('modal-title').textContent = id ? 'Modifica spesa' : 'Nuova spesa';
+if (id) {
+  var s = window._spese.find(function(x){return x.id===id;});
+  document.getElementById('f-nome').value = s.nome;
+  document.getElementById('f-importo').value = s.importo;
+  document.getElementById('f-iban').value = s.iban || '';
+  document.getElementById('f-immobile').value = s.immobile;
+  document.getElementById('f-scadenza').value = s.scadenza || '';
+  window._pagataToggle = s.pagata;
+  if (s.fileName) document.getElementById('attach-name').textContent = '📎 ' + s.fileName;
+} else {
+  document.getElementById('f-nome').value = '';
+  document.getElementById('f-importo').value = '';
+  document.getElementById('f-iban').value = '';
+  document.getElementById('f-immobile').value = window._tabAttivo !== 'tutte' ? window._tabAttivo : 'casa1';
+  document.getElementById('f-scadenza').value = '';
+}
+document.getElementById('toggle-pagata').className = 'toggle' + (window._pagataToggle ? ' on' : '');
+document.getElementById('modal-overlay').classList.add('open');
 };
 
 window.closeModal = function() {
- document.getElementById('modal-overlay').classList.remove('open');
- window._editId = null;
+document.getElementById('modal-overlay').classList.remove('open');
+window._editId = null;
 };
 
 window.overlayClick = function(e) {
- if (e.target === document.getElementById('modal-overlay')) closeModal();
+if (e.target === document.getElementById('modal-overlay')) closeModal();
 };
 
 window.togglePagata = function() {
- window._pagataToggle = !window._pagataToggle;
- document.getElementById('toggle-pagata').className = 'toggle' + (window._pagataToggle ? ' on' : '');
+window._pagataToggle = !window._pagataToggle;
+document.getElementById('toggle-pagata').className = 'toggle' + (window._pagataToggle ? ' on' : '');
 };
 
 window.handleFile = function(input) {
- if (input.files[0]) {
-   window._fileAllegato = { name: input.files[0].name };
-   document.getElementById('attach-name').textContent = '📎 ' + input.files[0].name;
- }
+if (input.files[0]) {
+  window._fileAllegato = { name: input.files[0].name };
+  document.getElementById('attach-name').textContent = '📎 ' + input.files[0].name;
+}
 };
 
 window.formatIban = function(input) {
- var val = input.value.replace(/\s/g,'').toUpperCase().replace(/[^A-Z0-9]/g,'');
- var groups = val.match(/.{1,4}/g);
- input.value = groups ? groups.join(' ') : val;
- var hint = document.getElementById('iban-hint');
- if (!val) { hint.textContent = 'Facoltativo'; hint.className = 'hint'; return; }
- if (val.length < 15) { hint.textContent = 'IBAN troppo corto'; hint.className = 'hint invalid'; return; }
- var rear = val.slice(4) + val.slice(0,4);
- var num = rear.split('').map(function(c){ return isNaN(c) ? (c.charCodeAt(0)-55).toString() : c; }).join('');
- var rem = 0;
- for (var i = 0; i < num.length; i++) rem = (rem * 10 + parseInt(num[i])) % 97;
- if (rem === 1) { hint.textContent = 'IBAN valido ✓'; hint.className = 'hint valid'; }
- else { hint.textContent = 'IBAN non valido — controlla i dati'; hint.className = 'hint invalid'; }
+var val = input.value.replace(/\s/g,'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+var groups = val.match(/.{1,4}/g);
+input.value = groups ? groups.join(' ') : val;
+var hint = document.getElementById('iban-hint');
+if (!val) { hint.textContent = 'Facoltativo'; hint.className = 'hint'; return; }
+if (val.length < 15) { hint.textContent = 'IBAN troppo corto'; hint.className = 'hint invalid'; return; }
+var rear = val.slice(4) + val.slice(0,4);
+var num = rear.split('').map(function(c){ return isNaN(c) ? (c.charCodeAt(0)-55).toString() : c; }).join('');
+var rem = 0;
+for (var i = 0; i < num.length; i++) rem = (rem * 10 + parseInt(num[i])) % 97;
+if (rem === 1) { hint.textContent = 'IBAN valido ✓'; hint.className = 'hint valid'; }
+else { hint.textContent = 'IBAN non valido — controlla i dati'; hint.className = 'hint invalid'; }
 };
 </script>
 </body>
 </html>
-
