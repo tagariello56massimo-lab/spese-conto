@@ -57,6 +57,7 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 .badge.pagata { background: #E6F4EC; color: #2D7A4F; }
 .badge.nonpagata { background: #FAEAEA; color: #B84040; }
 .spesa-date { font-size: 12px; color: var(--muted); }
+.spesa-pagata-date { font-size: 12px; color: var(--success); margin-top: 4px; }
 .spesa-iban { font-size: 12px; color: var(--muted); font-family: monospace; margin-top: 5px; }
 .spesa-iban span { color: var(--text); }
 .spesa-attach { font-size: 11px; color: var(--accent); margin-top: 4px; }
@@ -90,6 +91,18 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 .btn-cancel { width: 100%; padding: 13px; background: none; border: none; color: var(--muted); font-size: 14px; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-top: 4px; }
 .empty { text-align: center; padding: 48px 20px; color: var(--muted); }
 .empty-icon { font-size: 48px; margin-bottom: 12px; }
+.pagamento-overlay { position: fixed; inset: 0; background: rgba(26,23,19,0.55); display: flex; align-items: center; justify-content: center; z-index: 300; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding: 20px; }
+.pagamento-overlay.open { opacity: 1; pointer-events: all; }
+.pagamento-box { background: var(--card); border-radius: 20px; padding: 24px 20px; width: 100%; max-width: 320px; transform: scale(0.95); transition: transform 0.2s; }
+.pagamento-overlay.open .pagamento-box { transform: scale(1); }
+.pagamento-box h3 { font-family: 'DM Serif Display', serif; font-size: 18px; font-weight: 400; margin-bottom: 6px; }
+.pagamento-box p { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+.pagamento-box input[type=date] { width: 100%; padding: 12px 14px; border: 0.5px solid var(--border); border-radius: 10px; font-size: 16px; font-family: 'DM Sans', sans-serif; background: white; color: var(--text); -webkit-appearance: none; margin-bottom: 14px; }
+.pagamento-box input[type=date]:focus { outline: none; border-color: var(--accent); }
+.pagamento-btns { display: flex; gap: 8px; }
+.pagamento-btns button { flex: 1; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; border: 0.5px solid var(--border); }
+.btn-conferma { background: var(--success); color: white; border-color: var(--success) !important; }
+.btn-annulla-pag { background: var(--card); color: var(--muted); }
 </style>
 </head>
 <body>
@@ -164,6 +177,10 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
      <button class="toggle" id="toggle-pagata" onclick="togglePagata()"></button>
    </div>
  </div>
+ <div class="form-group" id="group-data-pagamento" style="display:none">
+   <label>Data pagamento</label>
+   <input type="date" id="f-data-pagamento" />
+ </div>
  <div class="form-group">
    <label>Documento allegato</label>
    <input type="file" id="f-file" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this)" />
@@ -174,18 +191,30 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 </div>
 </div>
 
+<div class="pagamento-overlay" id="pagamento-overlay">
+ <div class="pagamento-box">
+   <h3>Data di pagamento</h3>
+   <p>Inserisci la data in cui hai pagato</p>
+   <input type="date" id="p-data" />
+   <div class="pagamento-btns">
+     <button class="btn-annulla-pag" onclick="chiudiPagamento()">Annulla</button>
+     <button class="btn-conferma" onclick="confermaPagamento()">Conferma</button>
+   </div>
+ </div>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-apiKey: "AIzaSyBFzRfzZUUNSSJ3w08zG1K08aMpTpSJ0zI",
-authDomain: "spese-conto-d1775.firebaseapp.com",
-projectId: "spese-conto-d1775",
-storageBucket: "spese-conto-d1775.firebasestorage.app",
-messagingSenderId: "989458136531",
-appId: "1:989458136531:web:7bdcc52b4e0bc9de2ac326",
-measurementId: "G-SLKWTVHZD6"
+ apiKey: "AIzaSyBFzRfzZUUNSSJ3w08zG1K08aMpTpSJ0zI",
+ authDomain: "spese-conto-d1775.firebaseapp.com",
+ projectId: "spese-conto-d1775",
+ storageBucket: "spese-conto-d1775.firebasestorage.app",
+ messagingSenderId: "989458136531",
+ appId: "1:989458136531:web:7bdcc52b4e0bc9de2ac326",
+ measurementId: "G-SLKWTVHZD6"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -198,219 +227,237 @@ window._filtroAttivo = 'tutte';
 window._pagataToggle = false;
 window._fileAllegato = null;
 window._editId = null;
+window._pagamentoId = null;
 
 function setSyncStatus(stato, testo) {
-var dot = document.getElementById('sync-dot');
-var txt = document.getElementById('sync-text');
-dot.className = 'sync-dot ' + stato;
-txt.textContent = testo;
+ document.getElementById('sync-dot').className = 'sync-dot ' + stato;
+ document.getElementById('sync-text').textContent = testo;
 }
-
-onSnapshot(speseRef, function(snapshot) {
-window._spese = [];
-snapshot.forEach(function(docSnap) {
-  var d = docSnap.data();
-  d.id = docSnap.id;
-  window._spese.push(d);
-});
-setSyncStatus('ok', 'Sincronizzato');
-renderLista();
-}, function(error) {
-setSyncStatus('err', 'Errore connessione');
-console.error(error);
-});
-
-window.marcaPagata = async function(id) {
-await updateDoc(doc(db, "spese", id), { pagata: true });
-};
-window.marcaNonPagata = async function(id) {
-await updateDoc(doc(db, "spese", id), { pagata: false });
-};
-window.eliminaSpesa = async function(id) {
-if (confirm('Eliminare questa spesa?')) {
-  await deleteDoc(doc(db, "spese", id));
-}
-};
-window.editSpesa = function(id) { openModal(id); };
-
-window.saveSpesa = async function() {
-var nome = document.getElementById('f-nome').value.trim();
-var importo = document.getElementById('f-importo').value;
-var iban = document.getElementById('f-iban').value.trim();
-var immobile = document.getElementById('f-immobile').value;
-var scadenza = document.getElementById('f-scadenza').value;
-if (!nome || !importo) { alert('Inserisci almeno descrizione e importo'); return; }
-setSyncStatus('loading', 'Salvataggio...');
-if (window._editId) {
-  await updateDoc(doc(db, "spese", window._editId), {
-    nome: nome, importo: parseFloat(importo), iban: iban,
-    immobile: immobile, scadenza: scadenza, pagata: window._pagataToggle,
-    fileName: window._fileAllegato ? window._fileAllegato.name : (window._spese.find(function(x){return x.id===window._editId;}) || {}).fileName || null
-  });
-} else {
-  await addDoc(speseRef, {
-    nome: nome, importo: parseFloat(importo), iban: iban,
-    immobile: immobile, scadenza: scadenza, pagata: window._pagataToggle,
-    fileName: window._fileAllegato ? window._fileAllegato.name : null,
-    creata: oggi(), timestamp: serverTimestamp()
-  });
-}
-closeModal();
-};
 
 function oggi() { return new Date().toISOString().split('T')[0]; }
 function isScaduta(s) { return !s.pagata && s.scadenza && s.scadenza < oggi(); }
 function isInScadenza(s) {
-if (s.pagata || !s.scadenza) return false;
-var diff = (new Date(s.scadenza) - new Date()) / (1000*60*60*24);
-return diff >= 0 && diff <= 7;
+ if (s.pagata || !s.scadenza) return false;
+ var diff = (new Date(s.scadenza) - new Date()) / (1000*60*60*24);
+ return diff >= 0 && diff <= 7;
 }
-function fmt(n) {
-return '€' + Number(n).toLocaleString('it-IT', {minimumFractionDigits:2, maximumFractionDigits:2});
-}
-function fmtDate(d) {
-if (!d) return '';
-var p = d.split('-');
-return p[2]+'/'+p[1]+'/'+p[0];
-}
-function esc(str) {
-return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+function fmt(n) { return '€' + Number(n).toLocaleString('it-IT', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function fmtDate(d) { if (!d) return ''; var p = d.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
+function esc(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-window.switchTab = function(tab) {
-window._tabAttivo = tab;
-document.getElementById('tab-tutte').classList.toggle('active', tab === 'tutte');
-document.getElementById('tab-casa1').classList.toggle('active', tab === 'casa1');
-document.getElementById('tab-montagna').classList.toggle('active', tab === 'montagna');
-renderLista();
+onSnapshot(speseRef, function(snapshot) {
+ window._spese = [];
+ snapshot.forEach(function(docSnap) {
+   var d = docSnap.data(); d.id = docSnap.id;
+   window._spese.push(d);
+ });
+ setSyncStatus('ok', 'Sincronizzato');
+ renderLista();
+}, function(error) {
+ setSyncStatus('err', 'Errore connessione');
+ console.error(error);
+});
+
+window.marcaPagata = function(id) {
+ window._pagamentoId = id;
+ document.getElementById('p-data').value = oggi();
+ document.getElementById('pagamento-overlay').classList.add('open');
 };
 
-window.setFilter = function(f) {
-window._filtroAttivo = f;
-['tutte','pagate','nonpagate','scadute'].forEach(function(x) {
-  document.getElementById('f-'+x).classList.toggle('active', x === f);
-});
-renderLista();
+window.chiudiPagamento = function() {
+ document.getElementById('pagamento-overlay').classList.remove('open');
+ window._pagamentoId = null;
+};
+
+window.confermaPagamento = async function() {
+ var data = document.getElementById('p-data').value;
+ if (!data) { alert('Inserisci la data di pagamento'); return; }
+ setSyncStatus('loading', 'Salvataggio...');
+ await updateDoc(doc(db, "spese", window._pagamentoId), { pagata: true, dataPagamento: data });
+ window.chiudiPagamento();
+};
+
+window.marcaNonPagata = async function(id) {
+ setSyncStatus('loading', 'Salvataggio...');
+ await updateDoc(doc(db, "spese", id), { pagata: false, dataPagamento: null });
+};
+
+window.eliminaSpesa = async function(id) {
+ if (confirm('Eliminare questa spesa?')) await deleteDoc(doc(db, "spese", id));
+};
+
+window.editSpesa = function(id) { window.openModal(id); };
+
+window.saveSpesa = async function() {
+ var nome = document.getElementById('f-nome').value.trim();
+ var importo = document.getElementById('f-importo').value;
+ var iban = document.getElementById('f-iban').value.trim();
+ var immobile = document.getElementById('f-immobile').value;
+ var scadenza = document.getElementById('f-scadenza').value;
+ var dataPagamento = document.getElementById('f-data-pagamento').value || null;
+ if (!nome || !importo) { alert('Inserisci almeno descrizione e importo'); return; }
+ setSyncStatus('loading', 'Salvataggio...');
+ if (window._editId) {
+   var existing = window._spese.find(function(x){return x.id===window._editId;}) || {};
+   await updateDoc(doc(db, "spese", window._editId), {
+     nome: nome, importo: parseFloat(importo), iban: iban,
+     immobile: immobile, scadenza: scadenza, pagata: window._pagataToggle,
+     dataPagamento: window._pagataToggle ? (dataPagamento || existing.dataPagamento || null) : null,
+     fileName: window._fileAllegato ? window._fileAllegato.name : (existing.fileName || null)
+   });
+ } else {
+   await addDoc(speseRef, {
+     nome: nome, importo: parseFloat(importo), iban: iban,
+     immobile: immobile, scadenza: scadenza, pagata: window._pagataToggle,
+     dataPagamento: window._pagataToggle ? (dataPagamento || null) : null,
+     fileName: window._fileAllegato ? window._fileAllegato.name : null,
+     creata: oggi(), timestamp: serverTimestamp()
+   });
+ }
+ window.closeModal();
 };
 
 function renderLista() {
-var lista = window._spese.slice();
-if (window._tabAttivo === 'casa1') lista = lista.filter(function(s){ return s.immobile === 'casa1'; });
-else if (window._tabAttivo === 'montagna') lista = lista.filter(function(s){ return s.immobile === 'montagna'; });
-if (window._filtroAttivo === 'pagate') lista = lista.filter(function(s){ return s.pagata; });
-else if (window._filtroAttivo === 'nonpagate') lista = lista.filter(function(s){ return !s.pagata; });
-else if (window._filtroAttivo === 'scadute') lista = lista.filter(function(s){ return isScaduta(s); });
-lista.sort(function(a,b) {
-  var da = a.scadenza || '9999'; var db2 = b.scadenza || '9999';
-  return da < db2 ? -1 : da > db2 ? 1 : 0;
-});
-var listaTab = window._tabAttivo === 'tutte' ? window._spese : window._spese.filter(function(s){ return s.immobile === window._tabAttivo; });
-var totale = 0, pagato = 0, nonpagato = 0, inScad = 0;
-listaTab.forEach(function(s) {
-  var imp = parseFloat(s.importo) || 0;
-  totale += imp;
-  if (s.pagata) pagato += imp; else nonpagato += imp;
-  if (isScaduta(s) || isInScadenza(s)) inScad++;
-});
-document.getElementById('tot-totale').textContent = fmt(totale);
-document.getElementById('tot-pagato').textContent = fmt(pagato);
-document.getElementById('tot-nonpagato').textContent = fmt(nonpagato);
-document.getElementById('tot-scadenza').textContent = inScad;
-var el = document.getElementById('lista-spese');
-if (!lista.length) {
-  el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Nessuna spesa trovata</p></div>';
-  return;
-}
-el.innerHTML = lista.map(function(s) {
-  var scad = isScaduta(s);
-  var vicina = isInScadenza(s);
-  return '<div class="spesa-card' + (scad ? ' scaduta' : '') + '">'
-    + '<div class="spesa-top">'
-    + '<div class="spesa-nome">' + esc(s.nome) + '</div>'
-    + '<div class="spesa-importo">' + fmt(s.importo) + '</div>'
-    + '</div>'
-    + '<div class="spesa-meta">'
-    + '<span class="badge ' + s.immobile + '">' + (s.immobile === 'casa1' ? 'Prima casa' : 'Montagna') + '</span>'
-    + '<span class="badge ' + (s.pagata ? 'pagata' : 'nonpagata') + '">' + (s.pagata ? 'Pagata' : 'Da pagare') + '</span>'
-    + (s.scadenza ? '<span class="spesa-date">Scad. ' + fmtDate(s.scadenza) + '</span>' : '')
-    + '</div>'
-    + (s.iban ? '<div class="spesa-iban">IBAN <span>' + esc(s.iban) + '</span></div>' : '')
-    + (scad ? '<div class="scadenza-warning">⚠ Scadenza superata</div>' : '')
-    + (vicina ? '<div class="scadenza-warning">⚠ Scade entro 7 giorni</div>' : '')
-    + (s.fileName ? '<div class="spesa-attach">📎 ' + esc(s.fileName) + '</div>' : '')
-    + '<div class="spesa-actions">'
-    + (!s.pagata
-        ? '<button class="btn-small success" onclick="marcaPagata(\'' + s.id + '\')">Segna pagata</button>'
-        : '<button class="btn-small" onclick="marcaNonPagata(\'' + s.id + '\')">Non pagata</button>')
-    + '<button class="btn-small" onclick="editSpesa(\'' + s.id + '\')">Modifica</button>'
-    + '<button class="btn-small danger" onclick="eliminaSpesa(\'' + s.id + '\')">Elimina</button>'
-    + '</div></div>';
-}).join('');
+ var lista = window._spese.slice();
+ if (window._tabAttivo === 'casa1') lista = lista.filter(function(s){ return s.immobile === 'casa1'; });
+ else if (window._tabAttivo === 'montagna') lista = lista.filter(function(s){ return s.immobile === 'montagna'; });
+ if (window._filtroAttivo === 'pagate') lista = lista.filter(function(s){ return s.pagata; });
+ else if (window._filtroAttivo === 'nonpagate') lista = lista.filter(function(s){ return !s.pagata; });
+ else if (window._filtroAttivo === 'scadute') lista = lista.filter(function(s){ return isScaduta(s); });
+ lista.sort(function(a,b) {
+   var da = a.scadenza || '9999'; var db2 = b.scadenza || '9999';
+   return da < db2 ? -1 : da > db2 ? 1 : 0;
+ });
+ var listaTab = window._tabAttivo === 'tutte' ? window._spese : window._spese.filter(function(s){ return s.immobile === window._tabAttivo; });
+ var totale = 0, pagato = 0, nonpagato = 0, inScad = 0;
+ listaTab.forEach(function(s) {
+   var imp = parseFloat(s.importo) || 0; totale += imp;
+   if (s.pagata) pagato += imp; else nonpagato += imp;
+   if (isScaduta(s) || isInScadenza(s)) inScad++;
+ });
+ document.getElementById('tot-totale').textContent = fmt(totale);
+ document.getElementById('tot-pagato').textContent = fmt(pagato);
+ document.getElementById('tot-nonpagato').textContent = fmt(nonpagato);
+ document.getElementById('tot-scadenza').textContent = inScad;
+ var el = document.getElementById('lista-spese');
+ if (!lista.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Nessuna spesa trovata</p></div>'; return; }
+ el.innerHTML = lista.map(function(s) {
+   var scad = isScaduta(s); var vicina = isInScadenza(s);
+   return '<div class="spesa-card' + (scad ? ' scaduta' : '') + '">'
+     + '<div class="spesa-top"><div class="spesa-nome">' + esc(s.nome) + '</div>'
+     + '<div class="spesa-importo">' + fmt(s.importo) + '</div></div>'
+     + '<div class="spesa-meta">'
+     + '<span class="badge ' + s.immobile + '">' + (s.immobile === 'casa1' ? 'Prima casa' : 'Montagna') + '</span>'
+     + '<span class="badge ' + (s.pagata ? 'pagata' : 'nonpagata') + '">' + (s.pagata ? 'Pagata' : 'Da pagare') + '</span>'
+     + (s.scadenza ? '<span class="spesa-date">Scad. ' + fmtDate(s.scadenza) + '</span>' : '')
+     + '</div>'
+     + (s.pagata && s.dataPagamento ? '<div class="spesa-pagata-date">✓ Pagata il ' + fmtDate(s.dataPagamento) + '</div>' : '')
+     + (s.iban ? '<div class="spesa-iban">IBAN <span>' + esc(s.iban) + '</span></div>' : '')
+     + (scad ? '<div class="scadenza-warning">⚠ Scadenza superata</div>' : '')
+     + (vicina ? '<div class="scadenza-warning">⚠ Scade entro 7 giorni</div>' : '')
+     + (s.fileName ? '<div class="spesa-attach">📎 ' + esc(s.fileName) + '</div>' : '')
+     + '<div class="spesa-actions">'
+     + (!s.pagata ? '<button class="btn-small success" onclick="marcaPagata(\'' + s.id + '\')">Segna pagata</button>'
+                  : '<button class="btn-small" onclick="marcaNonPagata(\'' + s.id + '\')">Non pagata</button>')
+     + '<button class="btn-small" onclick="editSpesa(\'' + s.id + '\')">Modifica</button>'
+     + '<button class="btn-small danger" onclick="eliminaSpesa(\'' + s.id + '\')">Elimina</button>'
+     + '</div></div>';
+ }).join('');
 }
 
+window.switchTab = function(tab) {
+ window._tabAttivo = tab;
+ document.getElementById('tab-tutte').classList.toggle('active', tab === 'tutte');
+ document.getElementById('tab-casa1').classList.toggle('active', tab === 'casa1');
+ document.getElementById('tab-montagna').classList.toggle('active', tab === 'montagna');
+ renderLista();
+};
+
+window.setFilter = function(f) {
+ window._filtroAttivo = f;
+ ['tutte','pagate','nonpagate','scadute'].forEach(function(x) {
+   document.getElementById('f-'+x).classList.toggle('active', x === f);
+ });
+ renderLista();
+};
+
 window.openModal = function(id) {
-window._editId = id || null;
-window._pagataToggle = false;
-window._fileAllegato = null;
-document.getElementById('attach-name').textContent = '';
-document.getElementById('iban-hint').textContent = 'Facoltativo';
-document.getElementById('iban-hint').className = 'hint';
-document.getElementById('modal-title').textContent = id ? 'Modifica spesa' : 'Nuova spesa';
-if (id) {
-  var s = window._spese.find(function(x){return x.id===id;});
-  document.getElementById('f-nome').value = s.nome;
-  document.getElementById('f-importo').value = s.importo;
-  document.getElementById('f-iban').value = s.iban || '';
-  document.getElementById('f-immobile').value = s.immobile;
-  document.getElementById('f-scadenza').value = s.scadenza || '';
-  window._pagataToggle = s.pagata;
-  if (s.fileName) document.getElementById('attach-name').textContent = '📎 ' + s.fileName;
-} else {
-  document.getElementById('f-nome').value = '';
-  document.getElementById('f-importo').value = '';
-  document.getElementById('f-iban').value = '';
-  document.getElementById('f-immobile').value = window._tabAttivo !== 'tutte' ? window._tabAttivo : 'casa1';
-  document.getElementById('f-scadenza').value = '';
-}
-document.getElementById('toggle-pagata').className = 'toggle' + (window._pagataToggle ? ' on' : '');
-document.getElementById('modal-overlay').classList.add('open');
+ window._editId = id || null;
+ window._pagataToggle = false;
+ window._fileAllegato = null;
+ document.getElementById('attach-name').textContent = '';
+ document.getElementById('iban-hint').textContent = 'Facoltativo';
+ document.getElementById('iban-hint').className = 'hint';
+ document.getElementById('modal-title').textContent = id ? 'Modifica spesa' : 'Nuova spesa';
+ document.getElementById('group-data-pagamento').style.display = 'none';
+ document.getElementById('f-data-pagamento').value = '';
+ if (id) {
+   var s = window._spese.find(function(x){return x.id===id;});
+   document.getElementById('f-nome').value = s.nome;
+   document.getElementById('f-importo').value = s.importo;
+   document.getElementById('f-iban').value = s.iban || '';
+   document.getElementById('f-immobile').value = s.immobile;
+   document.getElementById('f-scadenza').value = s.scadenza || '';
+   window._pagataToggle = s.pagata;
+   if (s.pagata) {
+     document.getElementById('group-data-pagamento').style.display = 'block';
+     document.getElementById('f-data-pagamento').value = s.dataPagamento || '';
+   }
+   if (s.fileName) document.getElementById('attach-name').textContent = '📎 ' + s.fileName;
+ } else {
+   document.getElementById('f-nome').value = '';
+   document.getElementById('f-importo').value = '';
+   document.getElementById('f-iban').value = '';
+   document.getElementById('f-immobile').value = window._tabAttivo !== 'tutte' ? window._tabAttivo : 'casa1';
+   document.getElementById('f-scadenza').value = '';
+ }
+ document.getElementById('toggle-pagata').className = 'toggle' + (window._pagataToggle ? ' on' : '');
+ document.getElementById('modal-overlay').classList.add('open');
 };
 
 window.closeModal = function() {
-document.getElementById('modal-overlay').classList.remove('open');
-window._editId = null;
+ document.getElementById('modal-overlay').classList.remove('open');
+ window._editId = null;
 };
 
 window.overlayClick = function(e) {
-if (e.target === document.getElementById('modal-overlay')) closeModal();
+ if (e.target === document.getElementById('modal-overlay')) window.closeModal();
 };
 
 window.togglePagata = function() {
-window._pagataToggle = !window._pagataToggle;
-document.getElementById('toggle-pagata').className = 'toggle' + (window._pagataToggle ? ' on' : '');
+ window._pagataToggle = !window._pagataToggle;
+ document.getElementById('toggle-pagata').className = 'toggle' + (window._pagataToggle ? ' on' : '');
+ var grp = document.getElementById('group-data-pagamento');
+ grp.style.display = window._pagataToggle ? 'block' : 'none';
+ if (window._pagataToggle) document.getElementById('f-data-pagamento').value = oggi();
+ else document.getElementById('f-data-pagamento').value = '';
 };
 
 window.handleFile = function(input) {
-if (input.files[0]) {
-  window._fileAllegato = { name: input.files[0].name };
-  document.getElementById('attach-name').textContent = '📎 ' + input.files[0].name;
-}
+ if (input.files[0]) {
+   window._fileAllegato = { name: input.files[0].name };
+   document.getElementById('attach-name').textContent = '📎 ' + input.files[0].name;
+ }
 };
 
 window.formatIban = function(input) {
-var val = input.value.replace(/\s/g,'').toUpperCase().replace(/[^A-Z0-9]/g,'');
-var groups = val.match(/.{1,4}/g);
-input.value = groups ? groups.join(' ') : val;
-var hint = document.getElementById('iban-hint');
-if (!val) { hint.textContent = 'Facoltativo'; hint.className = 'hint'; return; }
-if (val.length < 15) { hint.textContent = 'IBAN troppo corto'; hint.className = 'hint invalid'; return; }
-var rear = val.slice(4) + val.slice(0,4);
-var num = rear.split('').map(function(c){ return isNaN(c) ? (c.charCodeAt(0)-55).toString() : c; }).join('');
-var rem = 0;
-for (var i = 0; i < num.length; i++) rem = (rem * 10 + parseInt(num[i])) % 97;
-if (rem === 1) { hint.textContent = 'IBAN valido ✓'; hint.className = 'hint valid'; }
-else { hint.textContent = 'IBAN non valido — controlla i dati'; hint.className = 'hint invalid'; }
+ var val = input.value.replace(/\s/g,'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+ var groups = val.match(/.{1,4}/g);
+ input.value = groups ? groups.join(' ') : val;
+ var hint = document.getElementById('iban-hint');
+ if (!val) { hint.textContent = 'Facoltativo'; hint.className = 'hint'; return; }
+ if (val.length < 15) { hint.textContent = 'IBAN troppo corto'; hint.className = 'hint invalid'; return; }
+ var rear = val.slice(4) + val.slice(0,4);
+ var num = rear.split('').map(function(c){ return isNaN(c) ? (c.charCodeAt(0)-55).toString() : c; }).join('');
+ var rem = 0;
+ for (var i = 0; i < num.length; i++) rem = (rem * 10 + parseInt(num[i])) % 97;
+ if (rem === 1) { hint.textContent = 'IBAN valido ✓'; hint.className = 'hint valid'; }
+ else { hint.textContent = 'IBAN non valido — controlla i dati'; hint.className = 'hint invalid'; }
 };
 </script>
 </body>
 </html>
+
+
+
+Inviato da iPhone
