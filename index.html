@@ -31,8 +31,9 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 .sync-dot.err { background: #eb5757; }
 .sync-dot.loading { background: #f2c94c; animation: pulse 1s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-.tab-bar { background: var(--accent); display: flex; padding: 0 16px 16px; gap: 8px; }
-.tab { padding: 7px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: rgba(255,255,255,0.15); color: white; white-space: nowrap; font-family: 'DM Sans', sans-serif; }
+.tab-bar { background: var(--accent); display: flex; padding: 0 16px 16px; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab { padding: 7px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: rgba(255,255,255,0.15); color: white; white-space: nowrap; font-family: 'DM Sans', sans-serif; flex-shrink: 0; }
 .tab.active { background: white; color: var(--accent); }
 .section { padding: 16px 16px 0; }
 .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
@@ -103,6 +104,50 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 .pagamento-btns button { flex: 1; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; border: 0.5px solid var(--border); }
 .btn-conferma { background: var(--success); color: white; border-color: var(--success) !important; }
 .btn-annulla-pag { background: var(--card); color: var(--muted); }
+
+/* ========== RICEVUTE ========== */
+#section-ricevute { display: none; padding: 16px 16px 0; }
+.ricevute-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.ricevuta-categoria { background: var(--card); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s; }
+.ricevuta-categoria:active { background: #f0ede6; }
+.ricevuta-categoria-left { display: flex; flex-direction: column; gap: 3px; }
+.ricevuta-categoria-nome { font-weight: 500; font-size: 15px; }
+.ricevuta-categoria-count { font-size: 12px; color: var(--muted); }
+.ricevuta-categoria-arrow { color: var(--muted); font-size: 18px; }
+
+/* Modale ricevute */
+.modal-ric { background: var(--card); border-radius: 20px 20px 0 0; width: 100%; max-width: 480px; padding: 8px 20px calc(28px + var(--safe-bottom)); max-height: 92vh; overflow-y: auto; -webkit-overflow-scrolling: touch; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1); }
+.modal-overlay.open .modal-ric { transform: translateY(0); }
+
+/* Lista ricevute dentro modale */
+.ric-list { margin-bottom: 16px; }
+.ric-item { background: white; border-radius: 12px; border: 0.5px solid var(--border); padding: 12px 14px; margin-bottom: 8px; }
+.ric-item-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.ric-item-data { font-weight: 500; font-size: 14px; }
+.ric-item-pagato { font-size: 12px; margin-top: 4px; }
+.ric-item-pagato.conto { color: var(--success); }
+.ric-item-pagato.io { color: var(--accent2); }
+.ric-item-foto { font-size: 11px; color: var(--accent); margin-top: 4px; cursor: pointer; text-decoration: underline; }
+.ric-item-actions { display: flex; gap: 6px; margin-top: 10px; border-top: 0.5px solid var(--border); padding-top: 8px; }
+
+/* Form nuova ricevuta */
+.ric-form { background: white; border-radius: 12px; border: 0.5px solid var(--border); padding: 16px; margin-bottom: 16px; }
+.ric-form h4 { font-family: 'DM Serif Display', serif; font-size: 16px; font-weight: 400; margin-bottom: 14px; color: var(--accent); }
+.pagato-con-row { display: flex; gap: 8px; margin-top: 6px; }
+.pagato-con-btn { flex: 1; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--border); cursor: pointer; font-family: 'DM Sans', sans-serif; background: var(--card); color: var(--muted); text-align: center; transition: all 0.15s; }
+.pagato-con-btn.selected-conto { background: var(--success); color: white; border-color: var(--success); }
+.pagato-con-btn.selected-io { background: var(--accent2); color: white; border-color: var(--accent2); }
+.upload-area { border: 1.5px dashed var(--border); border-radius: 10px; padding: 16px; text-align: center; cursor: pointer; margin-top: 6px; transition: border-color 0.15s; }
+.upload-area:hover { border-color: var(--accent); }
+.upload-area input { display: none; }
+.upload-area-text { font-size: 13px; color: var(--muted); }
+.upload-area-text span { color: var(--accent); font-weight: 500; }
+.upload-progress { margin-top: 8px; }
+.upload-bar-bg { background: var(--border); border-radius: 4px; height: 4px; width: 100%; margin-top: 6px; }
+.upload-bar { background: var(--accent); height: 4px; border-radius: 4px; width: 0%; transition: width 0.3s; }
+.upload-filename { font-size: 11px; color: var(--success); margin-top: 4px; }
+.btn-salva-ric { width: 100%; padding: 13px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-top: 4px; }
+.btn-nuova-ric { width: 100%; padding: 12px; background: var(--card); color: var(--accent); border: 0.5px solid var(--accent); border-radius: 10px; font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-bottom: 10px; }
 </style>
 </head>
 <body>
@@ -123,8 +168,11 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
  <button class="tab active" id="tab-tutte" onclick="switchTab('tutte')">Tutte</button>
  <button class="tab" id="tab-casa1" onclick="switchTab('casa1')">Prima casa</button>
  <button class="tab" id="tab-montagna" onclick="switchTab('montagna')">Montagna</button>
+ <button class="tab" id="tab-ricevute" onclick="switchTab('ricevute')">Ricevute</button>
 </div>
-<div class="section">
+
+<!-- SEZIONE SPESE -->
+<div class="section" id="section-spese">
  <div class="summary-grid">
    <div class="summary-card"><div class="label">Totale spese</div><div class="value" id="tot-totale">€0,00</div></div>
    <div class="summary-card"><div class="label">Da pagare</div><div class="value danger" id="tot-nonpagato">€0,00</div></div>
@@ -139,10 +187,16 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
  </div>
  <div id="lista-spese"></div>
 </div>
+
+<!-- SEZIONE RICEVUTE -->
+<div id="section-ricevute">
+ <div class="ricevute-grid" id="ricevute-grid"></div>
+</div>
 </div>
 
-<button class="fab" onclick="openModal(null)">+ Nuova spesa</button>
+<button class="fab" id="fab-nuova" onclick="openModal(null)">+ Nuova spesa</button>
 
+<!-- MODAL SPESE -->
 <div class="modal-overlay" id="modal-overlay" onclick="overlayClick(event)">
 <div class="modal" id="modal">
  <div class="modal-handle"></div>
@@ -191,6 +245,51 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 </div>
 </div>
 
+<!-- MODAL RICEVUTE CATEGORIA -->
+<div class="modal-overlay" id="modal-ric-overlay" onclick="overlayClickRic(event)">
+<div class="modal-ric" id="modal-ric">
+ <div class="modal-handle"></div>
+ <h2 id="modal-ric-title">Ricevute</h2>
+
+ <!-- Lista ricevute esistenti -->
+ <div class="ric-list" id="ric-lista"></div>
+
+ <!-- Pulsante nuova ricevuta -->
+ <button class="btn-nuova-ric" id="btn-nuova-ric" onclick="toggleFormRic()">+ Nuova ricevuta</button>
+
+ <!-- Form nuova ricevuta -->
+ <div class="ric-form" id="ric-form" style="display:none">
+   <h4>Nuova ricevuta</h4>
+   <div class="form-group">
+     <label>Data</label>
+     <input type="date" id="ric-data" />
+   </div>
+   <div class="form-group">
+     <label>Pagata con</label>
+     <div class="pagato-con-row">
+       <button class="pagato-con-btn" id="btn-conto" onclick="selezionaPagatoCon('conto')">🏦 Conto</button>
+       <button class="pagato-con-btn" id="btn-io" onclick="selezionaPagatoCon('io')">👤 Io (contanti)</button>
+     </div>
+   </div>
+   <div class="form-group">
+     <label>Foto / Documento</label>
+     <div class="upload-area" onclick="document.getElementById('ric-file-input').click()">
+       <input type="file" id="ric-file-input" accept=".pdf,.jpg,.jpeg,.png" onchange="handleRicFile(this)" />
+       <div class="upload-area-text">📎 <span>Scegli file</span> o trascina qui<br><small>PDF, JPG, PNG</small></div>
+     </div>
+     <div class="upload-progress" id="ric-upload-progress" style="display:none">
+       <div class="upload-bar-bg"><div class="upload-bar" id="ric-upload-bar"></div></div>
+       <div class="upload-filename" id="ric-upload-filename"></div>
+     </div>
+   </div>
+   <button class="btn-salva-ric" onclick="salvaRicevuta()">Salva ricevuta</button>
+ </div>
+
+ <button class="btn-cancel" onclick="closeModalRic()">Chiudi</button>
+</div>
+</div>
+
+<!-- MODAL PAGAMENTO SPESE -->
 <div class="pagamento-overlay" id="pagamento-overlay">
  <div class="pagamento-box">
    <h3>Data di pagamento</h3>
@@ -205,7 +304,8 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 const firebaseConfig = {
  apiKey: "AIzaSyBFzRfzZUUNSSJ3w08zG1K08aMpTpSJ0zI",
@@ -219,8 +319,11 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 const speseRef = collection(db, "spese");
+const ricevuteRef = collection(db, "ricevute");
 
+// ===== STATO GLOBALE =====
 window._spese = [];
 window._tabAttivo = 'tutte';
 window._filtroAttivo = 'tutte';
@@ -229,6 +332,24 @@ window._fileAllegato = null;
 window._editId = null;
 window._pagamentoId = null;
 
+// Ricevute
+window._ricCategoria = null; // categoria attiva nel modale
+window._ricevute = {}; // { categoria: [lista] }
+window._ricPagatoCon = null;
+window._ricFileUpload = null; // file selezionato
+window._ricFileUrl = null; // url dopo upload
+window._ricFileName = null;
+window._ricFormOpen = false;
+
+const CATEGORIE_RIC = [
+ { id: 'donna', nome: 'Ricevute Donna di Servizio', emoji: '🧹' },
+ { id: 'casa', nome: 'Ricevute Condominio Casa', emoji: '🏠' },
+ { id: 'montagna', nome: 'Ricevute Condominio Montagna', emoji: '⛰️' },
+ { id: 'tari', nome: 'Ricevute TARI', emoji: '🗑️' },
+ { id: 'imu', nome: 'Ricevute IMU', emoji: '🏛️' },
+];
+
+// ===== SYNC STATUS =====
 function setSyncStatus(stato, testo) {
  document.getElementById('sync-dot').className = 'sync-dot ' + stato;
  document.getElementById('sync-text').textContent = testo;
@@ -243,8 +364,9 @@ function isInScadenza(s) {
 }
 function fmt(n) { return '€' + Number(n).toLocaleString('it-IT', {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function fmtDate(d) { if (!d) return ''; var p = d.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
-function esc(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function esc(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+// ===== SPESE LISTENER =====
 onSnapshot(speseRef, function(snapshot) {
  window._spese = [];
  snapshot.forEach(function(docSnap) {
@@ -258,6 +380,187 @@ onSnapshot(speseRef, function(snapshot) {
  console.error(error);
 });
 
+// ===== RICEVUTE LISTENER =====
+onSnapshot(ricevuteRef, function(snapshot) {
+ window._ricevute = {};
+ CATEGORIE_RIC.forEach(function(c) { window._ricevute[c.id] = []; });
+ snapshot.forEach(function(docSnap) {
+   var d = docSnap.data(); d.id = docSnap.id;
+   if (window._ricevute[d.categoria]) window._ricevute[d.categoria].push(d);
+ });
+ // ordina per data desc
+ CATEGORIE_RIC.forEach(function(c) {
+   window._ricevute[c.id].sort(function(a,b){ return (b.data||'') > (a.data||'') ? 1 : -1; });
+ });
+ renderRicevuteGrid();
+ if (window._ricCategoria) renderRicLista();
+}, function(err) { console.error(err); });
+
+// ===== TAB =====
+window.switchTab = function(tab) {
+ window._tabAttivo = tab;
+ ['tutte','casa1','montagna','ricevute'].forEach(function(t) {
+   document.getElementById('tab-'+t).classList.toggle('active', t === tab);
+ });
+ var isRic = tab === 'ricevute';
+ document.getElementById('section-spese').style.display = isRic ? 'none' : 'block';
+ document.getElementById('section-ricevute').style.display = isRic ? 'block' : 'none';
+ document.getElementById('fab-nuova').style.display = isRic ? 'none' : 'block';
+ if (!isRic) renderLista();
+};
+
+// ===== RENDER RICEVUTE GRID =====
+function renderRicevuteGrid() {
+ var el = document.getElementById('ricevute-grid');
+ if (!el) return;
+ el.innerHTML = CATEGORIE_RIC.map(function(c) {
+   var count = (window._ricevute[c.id] || []).length;
+   return '<div class="ricevuta-categoria" onclick="openModalRic(\'' + c.id + '\')">'
+     + '<div class="ricevuta-categoria-left">'
+     + '<div class="ricevuta-categoria-nome">' + c.emoji + ' ' + c.nome + '</div>'
+     + '<div class="ricevuta-categoria-count">' + (count > 0 ? count + ' ricevut' + (count===1?'a':'e') : 'Nessuna ricevuta') + '</div>'
+     + '</div>'
+     + '<div class="ricevuta-categoria-arrow">›</div>'
+     + '</div>';
+ }).join('');
+}
+
+// ===== MODAL RICEVUTE =====
+window.openModalRic = function(categoriaId) {
+ window._ricCategoria = categoriaId;
+ window._ricFormOpen = false;
+ window._ricPagatoCon = null;
+ window._ricFileUpload = null;
+ window._ricFileUrl = null;
+ window._ricFileName = null;
+ var cat = CATEGORIE_RIC.find(function(c){ return c.id === categoriaId; });
+ document.getElementById('modal-ric-title').textContent = cat ? cat.emoji + ' ' + cat.nome : 'Ricevute';
+ document.getElementById('ric-form').style.display = 'none';
+ document.getElementById('btn-nuova-ric').textContent = '+ Nuova ricevuta';
+ document.getElementById('ric-data').value = oggi();
+ document.getElementById('ric-upload-progress').style.display = 'none';
+ document.getElementById('ric-upload-filename').textContent = '';
+ document.getElementById('btn-conto').className = 'pagato-con-btn';
+ document.getElementById('btn-io').className = 'pagato-con-btn';
+ renderRicLista();
+ document.getElementById('modal-ric-overlay').classList.add('open');
+};
+
+window.closeModalRic = function() {
+ document.getElementById('modal-ric-overlay').classList.remove('open');
+ window._ricCategoria = null;
+};
+
+window.overlayClickRic = function(e) {
+ if (e.target === document.getElementById('modal-ric-overlay')) window.closeModalRic();
+};
+
+function renderRicLista() {
+ var lista = window._ricevute[window._ricCategoria] || [];
+ var el = document.getElementById('ric-lista');
+ if (!lista.length) {
+   el.innerHTML = '<div class="empty" style="padding:24px 0"><div class="empty-icon">🧾</div><p>Nessuna ricevuta</p></div>';
+   return;
+ }
+ el.innerHTML = lista.map(function(r) {
+   var pagatoLabel = r.pagatoCon === 'conto' ? '🏦 Pagata dal conto' : '👤 Pagata di tasca mia';
+   var pagatoClass = r.pagatoCon === 'conto' ? 'conto' : 'io';
+   return '<div class="ric-item">'
+     + '<div class="ric-item-top">'
+     + '<div>'
+     + '<div class="ric-item-data">📅 ' + fmtDate(r.data) + '</div>'
+     + '<div class="ric-item-pagato ' + pagatoClass + '">' + pagatoLabel + '</div>'
+     + (r.fileUrl ? '<div class="ric-item-foto" onclick="window.open(\'' + esc(r.fileUrl) + '\',\'_blank\')">📎 ' + esc(r.fileName||'Documento') + '</div>' : '')
+     + '</div>'
+     + '<div style="display:flex;gap:6px">'
+     + '<button class="btn-small danger" style="padding:6px 10px;font-size:11px" onclick="eliminaRicevuta(\'' + r.id + '\'' + (r.filePath ? ',\'' + esc(r.filePath) + '\'' : '') + ')">Elimina</button>'
+     + '</div>'
+     + '</div>'
+     + '</div>';
+ }).join('');
+}
+
+window.toggleFormRic = function() {
+ window._ricFormOpen = !window._ricFormOpen;
+ document.getElementById('ric-form').style.display = window._ricFormOpen ? 'block' : 'none';
+ document.getElementById('btn-nuova-ric').textContent = window._ricFormOpen ? '✕ Annulla' : '+ Nuova ricevuta';
+ if (window._ricFormOpen) {
+   document.getElementById('ric-data').value = oggi();
+   window._ricPagatoCon = null;
+   window._ricFileUpload = null;
+   window._ricFileUrl = null;
+   window._ricFileName = null;
+   document.getElementById('btn-conto').className = 'pagato-con-btn';
+   document.getElementById('btn-io').className = 'pagato-con-btn';
+   document.getElementById('ric-upload-progress').style.display = 'none';
+   document.getElementById('ric-upload-filename').textContent = '';
+   document.getElementById('ric-file-input').value = '';
+ }
+};
+
+window.selezionaPagatoCon = function(val) {
+ window._ricPagatoCon = val;
+ document.getElementById('btn-conto').className = 'pagato-con-btn' + (val === 'conto' ? ' selected-conto' : '');
+ document.getElementById('btn-io').className = 'pagato-con-btn' + (val === 'io' ? ' selected-io' : '');
+};
+
+window.handleRicFile = function(input) {
+ if (!input.files[0]) return;
+ window._ricFileUpload = input.files[0];
+ window._ricFileName = input.files[0].name;
+ document.getElementById('ric-upload-progress').style.display = 'block';
+ document.getElementById('ric-upload-filename').textContent = '⏳ ' + window._ricFileName;
+ document.getElementById('ric-upload-bar').style.width = '0%';
+ // upload immediato su Storage
+ var path = 'ricevute/' + window._ricCategoria + '/' + Date.now() + '_' + window._ricFileName;
+ var sRef = storageRef(storage, path);
+ var uploadTask = uploadBytesResumable(sRef, window._ricFileUpload);
+ uploadTask.on('state_changed',
+   function(snapshot) {
+     var pct = (snapshot.bytesTransferred / snapshot.totalBytes * 100).toFixed(0);
+     document.getElementById('ric-upload-bar').style.width = pct + '%';
+   },
+   function(err) {
+     document.getElementById('ric-upload-filename').textContent = '❌ Errore upload: ' + err.message;
+   },
+   function() {
+     getDownloadURL(uploadTask.snapshot.ref).then(function(url) {
+       window._ricFileUrl = url;
+       window._ricFilePath = path;
+       document.getElementById('ric-upload-filename').textContent = '✅ ' + window._ricFileName;
+       document.getElementById('ric-upload-bar').style.width = '100%';
+     });
+   }
+ );
+};
+
+window.salvaRicevuta = async function() {
+ var data = document.getElementById('ric-data').value;
+ if (!data) { alert('Inserisci la data'); return; }
+ if (!window._ricPagatoCon) { alert('Seleziona come è stata pagata'); return; }
+ if (window._ricFileUpload && !window._ricFileUrl) { alert('Attendi il completamento del caricamento del file'); return; }
+ setSyncStatus('loading', 'Salvataggio...');
+ await addDoc(ricevuteRef, {
+   categoria: window._ricCategoria,
+   data: data,
+   pagatoCon: window._ricPagatoCon,
+   fileUrl: window._ricFileUrl || null,
+   filePath: window._ricFilePath || null,
+   fileName: window._ricFileName || null,
+   timestamp: serverTimestamp()
+ });
+ window.toggleFormRic();
+};
+
+window.eliminaRicevuta = async function(id, filePath) {
+ if (!confirm('Eliminare questa ricevuta?')) return;
+ if (filePath) {
+   try { await deleteObject(storageRef(storage, filePath)); } catch(e) { console.warn('File già eliminato o non trovato'); }
+ }
+ await deleteDoc(doc(db, "ricevute", id));
+};
+
+// ===== SPESE =====
 window.marcaPagata = function(id) {
  window._pagamentoId = id;
  document.getElementById('p-data').value = oggi();
@@ -365,14 +668,6 @@ function renderLista() {
  }).join('');
 }
 
-window.switchTab = function(tab) {
- window._tabAttivo = tab;
- document.getElementById('tab-tutte').classList.toggle('active', tab === 'tutte');
- document.getElementById('tab-casa1').classList.toggle('active', tab === 'casa1');
- document.getElementById('tab-montagna').classList.toggle('active', tab === 'montagna');
- renderLista();
-};
-
 window.setFilter = function(f) {
  window._filtroAttivo = f;
  ['tutte','pagate','nonpagate','scadute'].forEach(function(x) {
@@ -408,7 +703,7 @@ window.openModal = function(id) {
    document.getElementById('f-nome').value = '';
    document.getElementById('f-importo').value = '';
    document.getElementById('f-iban').value = '';
-   document.getElementById('f-immobile').value = window._tabAttivo !== 'tutte' ? window._tabAttivo : 'casa1';
+   document.getElementById('f-immobile').value = window._tabAttivo !== 'tutte' && window._tabAttivo !== 'ricevute' ? window._tabAttivo : 'casa1';
    document.getElementById('f-scadenza').value = '';
  }
  document.getElementById('toggle-pagata').className = 'toggle' + (window._pagataToggle ? ' on' : '');
@@ -457,7 +752,3 @@ window.formatIban = function(input) {
 </script>
 </body>
 </html>
-
-
-
-Inviato da iPhone
