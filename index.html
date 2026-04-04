@@ -268,7 +268,7 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
      <label>Pagata con</label>
      <div class="pagato-con-row">
        <button class="pagato-con-btn" id="btn-conto" onclick="selezionaPagatoCon('conto')">🏦 Conto</button>
-       <button class="pagato-con-btn" id="btn-io" onclick="selezionaPagatoCon('io')">👤 Io (contanti)</button>
+       <button class="pagato-con-btn" id="btn-io" onclick="selezionaPagatoCon('io')">📱 APP IO</button>
      </div>
    </div>
    <div class="form-group">
@@ -340,6 +340,7 @@ window._ricFileUpload = null; // file selezionato
 window._ricFileUrl = null; // url dopo upload
 window._ricFileName = null;
 window._ricFormOpen = false;
+window._editRicId = null;
 
 const CATEGORIE_RIC = [
  { id: 'donna', nome: 'Ricevute Donna di Servizio', emoji: '🧹' },
@@ -463,7 +464,7 @@ function renderRicLista() {
    return;
  }
  el.innerHTML = lista.map(function(r) {
-   var pagatoLabel = r.pagatoCon === 'conto' ? '🏦 Pagata dal conto' : '👤 Pagata di tasca mia';
+   var pagatoLabel = r.pagatoCon === 'conto' ? '🏦 Pagata dal conto' : '📱 APP IO';
    var pagatoClass = r.pagatoCon === 'conto' ? 'conto' : 'io';
    return '<div class="ric-item">'
      + '<div class="ric-item-top">'
@@ -473,6 +474,7 @@ function renderRicLista() {
      + (r.fileUrl ? '<div class="ric-item-foto" onclick="window.open(\'' + esc(r.fileUrl) + '\',\'_blank\')">📎 ' + esc(r.fileName||'Documento') + '</div>' : '')
      + '</div>'
      + '<div style="display:flex;gap:6px">'
+     + '<button class="btn-small" style="padding:6px 10px;font-size:11px" onclick="modificaRicevuta(\'' + r.id + '\')">Modifica</button>'
      + '<button class="btn-small danger" style="padding:6px 10px;font-size:11px" onclick="eliminaRicevuta(\'' + r.id + '\'' + (r.filePath ? ',\'' + esc(r.filePath) + '\'' : '') + ')">Elimina</button>'
      + '</div>'
      + '</div>'
@@ -482,8 +484,10 @@ function renderRicLista() {
 
 window.toggleFormRic = function() {
  window._ricFormOpen = !window._ricFormOpen;
+ window._editRicId = null;
  document.getElementById('ric-form').style.display = window._ricFormOpen ? 'block' : 'none';
  document.getElementById('btn-nuova-ric').textContent = window._ricFormOpen ? '✕ Annulla' : '+ Nuova ricevuta';
+ document.getElementById('ric-form').querySelector('h4').textContent = 'Nuova ricevuta';
  if (window._ricFormOpen) {
    document.getElementById('ric-data').value = oggi();
    window._ricPagatoCon = null;
@@ -534,21 +538,51 @@ window.handleRicFile = function(input) {
  );
 };
 
+window.modificaRicevuta = function(id) {
+ var r = (window._ricevute[window._ricCategoria] || []).find(function(x){ return x.id === id; });
+ if (!r) return;
+ window._editRicId = id;
+ window._ricFormOpen = true;
+ window._ricPagatoCon = r.pagatoCon || null;
+ window._ricFileUrl = r.fileUrl || null;
+ window._ricFilePath = r.filePath || null;
+ window._ricFileName = r.fileName || null;
+ window._ricFileUpload = null;
+ document.getElementById('ric-form').style.display = 'block';
+ document.getElementById('ric-form').querySelector('h4').textContent = 'Modifica ricevuta';
+ document.getElementById('btn-nuova-ric').textContent = '✕ Annulla';
+ document.getElementById('ric-data').value = r.data || '';
+ document.getElementById('btn-conto').className = 'pagato-con-btn' + (r.pagatoCon === 'conto' ? ' selected-conto' : '');
+ document.getElementById('btn-io').className = 'pagato-con-btn' + (r.pagatoCon === 'io' ? ' selected-io' : '');
+ document.getElementById('ric-upload-progress').style.display = r.fileName ? 'block' : 'none';
+ document.getElementById('ric-upload-filename').textContent = r.fileName ? '✅ ' + r.fileName : '';
+ document.getElementById('ric-upload-bar').style.width = r.fileName ? '100%' : '0%';
+ document.getElementById('ric-file-input').value = '';
+ // scroll al form
+ document.getElementById('ric-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
 window.salvaRicevuta = async function() {
  var data = document.getElementById('ric-data').value;
  if (!data) { alert('Inserisci la data'); return; }
  if (!window._ricPagatoCon) { alert('Seleziona come è stata pagata'); return; }
  if (window._ricFileUpload && !window._ricFileUrl) { alert('Attendi il completamento del caricamento del file'); return; }
  setSyncStatus('loading', 'Salvataggio...');
- await addDoc(ricevuteRef, {
+ var dati = {
    categoria: window._ricCategoria,
    data: data,
    pagatoCon: window._ricPagatoCon,
    fileUrl: window._ricFileUrl || null,
    filePath: window._ricFilePath || null,
    fileName: window._ricFileName || null,
-   timestamp: serverTimestamp()
- });
+ };
+ if (window._editRicId) {
+   await updateDoc(doc(db, "ricevute", window._editRicId), dati);
+ } else {
+   dati.timestamp = serverTimestamp();
+   await addDoc(ricevuteRef, dati);
+ }
+ window._editRicId = null;
  window.toggleFormRic();
 };
 
