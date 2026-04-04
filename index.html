@@ -104,7 +104,7 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 .pagamento-btns button { flex: 1; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; border: 0.5px solid var(--border); }
 .btn-conferma { background: var(--success); color: white; border-color: var(--success) !important; }
 .btn-annulla-pag { background: var(--card); color: var(--muted); }
-
+ 
 /* ========== RICEVUTE ========== */
 #section-ricevute { display: none; padding: 16px 16px 0; }
 .ricevute-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
@@ -114,11 +114,11 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 .ricevuta-categoria-nome { font-weight: 500; font-size: 15px; }
 .ricevuta-categoria-count { font-size: 12px; color: var(--muted); }
 .ricevuta-categoria-arrow { color: var(--muted); font-size: 18px; }
-
+ 
 /* Modale ricevute */
 .modal-ric { background: var(--card); border-radius: 20px 20px 0 0; width: 100%; max-width: 480px; padding: 8px 20px calc(28px + var(--safe-bottom)); max-height: 92vh; overflow-y: auto; -webkit-overflow-scrolling: touch; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1); }
 .modal-overlay.open .modal-ric { transform: translateY(0); }
-
+ 
 /* Lista ricevute dentro modale */
 .ric-list { margin-bottom: 16px; }
 .ric-item { background: white; border-radius: 12px; border: 0.5px solid var(--border); padding: 12px 14px; margin-bottom: 8px; }
@@ -129,7 +129,7 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 .ric-item-pagato.io { color: var(--accent2); }
 .ric-item-foto { font-size: 11px; color: var(--accent); margin-top: 4px; cursor: pointer; text-decoration: underline; }
 .ric-item-actions { display: flex; gap: 6px; margin-top: 10px; border-top: 0.5px solid var(--border); padding-top: 8px; }
-
+ 
 /* Form nuova ricevuta */
 .ric-form { background: white; border-radius: 12px; border: 0.5px solid var(--border); padding: 16px; margin-bottom: 16px; }
 .ric-form h4 { font-family: 'DM Serif Display', serif; font-size: 16px; font-weight: 400; margin-bottom: 14px; color: var(--accent); }
@@ -161,7 +161,7 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
  <button class="tab" id="tab-montagna" onclick="switchTab('montagna')">Montagna</button>
  <button class="tab" id="tab-ricevute" onclick="switchTab('ricevute')">Ricevute</button>
 </div>
-
+ 
 <!-- SEZIONE SPESE -->
 <div class="section" id="section-spese">
  <div class="summary-grid">
@@ -178,15 +178,15 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
  </div>
  <div id="lista-spese"></div>
 </div>
-
+ 
 <!-- SEZIONE RICEVUTE -->
 <div id="section-ricevute">
  <div class="ricevute-grid" id="ricevute-grid"></div>
 </div>
 </div>
-
+ 
 <button class="fab" id="fab-nuova" onclick="openModal(null)">+ Nuova spesa</button>
-
+ 
 <!-- MODAL SPESE -->
 <div class="modal-overlay" id="modal-overlay" onclick="overlayClick(event)">
 <div class="modal" id="modal">
@@ -235,19 +235,19 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
  <button class="btn-cancel" onclick="closeModal()">Annulla</button>
 </div>
 </div>
-
+ 
 <!-- MODAL RICEVUTE CATEGORIA -->
 <div class="modal-overlay" id="modal-ric-overlay" onclick="overlayClickRic(event)">
 <div class="modal-ric" id="modal-ric">
  <div class="modal-handle"></div>
  <h2 id="modal-ric-title">Ricevute</h2>
-
+ 
  <!-- Lista ricevute esistenti -->
  <div class="ric-list" id="ric-lista"></div>
-
+ 
  <!-- Pulsante nuova ricevuta -->
  <button class="btn-nuova-ric" id="btn-nuova-ric" onclick="toggleFormRic()">+ Nuova ricevuta</button>
-
+ 
  <!-- Form nuova ricevuta -->
  <div class="ric-form" id="ric-form" style="display:none">
    <h4>Nuova ricevuta</h4>
@@ -273,11 +273,11 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
    </div>
    <button class="btn-salva-ric" onclick="salvaRicevuta()">Salva ricevuta</button>
  </div>
-
+ 
  <button class="btn-cancel" onclick="closeModalRic()">Chiudi</button>
 </div>
 </div>
-
+ 
 <!-- MODAL PAGAMENTO SPESE -->
 <div class="pagamento-overlay" id="pagamento-overlay">
  <div class="pagamento-box">
@@ -290,11 +290,11 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
    </div>
  </div>
 </div>
-
+ 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
+ 
 const firebaseConfig = {
  apiKey: "AIzaSyBFzRfzZUUNSSJ3w08zG1K08aMpTpSJ0zI",
  authDomain: "spese-conto-d1775.firebaseapp.com",
@@ -304,12 +304,12 @@ const firebaseConfig = {
  appId: "1:989458136531:web:7bdcc52b4e0bc9de2ac326",
  measurementId: "G-SLKWTVHZD6"
 };
-
+ 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const speseRef = collection(db, "spese");
 const ricevuteRef = collection(db, "ricevute");
-
+ 
 // ===== STATO GLOBALE =====
 window._spese = [];
 window._tabAttivo = 'tutte';
@@ -318,7 +318,7 @@ window._pagataToggle = false;
 window._fileAllegato = null;
 window._editId = null;
 window._pagamentoId = null;
-
+ 
 // Ricevute
 window._ricCategoria = null; // categoria attiva nel modale
 window._ricevute = {}; // { categoria: [lista] }
@@ -328,7 +328,7 @@ window._ricFileUrl = null; // url dopo upload
 window._ricFileName = null;
 window._ricFormOpen = false;
 window._editRicId = null;
-
+ 
 const CATEGORIE_RIC = [
  { id: 'donna', nome: 'Ricevute Donna di Servizio', emoji: '🧹' },
  { id: 'casa', nome: 'Ricevute Condominio Casa', emoji: '🏠' },
@@ -336,13 +336,13 @@ const CATEGORIE_RIC = [
  { id: 'tari', nome: 'Ricevute TARI', emoji: '🗑️' },
  { id: 'imu', nome: 'Ricevute IMU', emoji: '🏛️' },
 ];
-
+ 
 // ===== SYNC STATUS =====
 function setSyncStatus(stato, testo) {
  document.getElementById('sync-dot').className = 'sync-dot ' + stato;
  document.getElementById('sync-text').textContent = testo;
 }
-
+ 
 function oggi() { return new Date().toISOString().split('T')[0]; }
 function isScaduta(s) { return !s.pagata && s.scadenza && s.scadenza < oggi(); }
 function isInScadenza(s) {
@@ -353,7 +353,7 @@ function isInScadenza(s) {
 function fmt(n) { return '€' + Number(n).toLocaleString('it-IT', {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function fmtDate(d) { if (!d) return ''; var p = d.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
 function esc(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
+ 
 // ===== SPESE LISTENER =====
 onSnapshot(speseRef, function(snapshot) {
  window._spese = [];
@@ -367,7 +367,7 @@ onSnapshot(speseRef, function(snapshot) {
  setSyncStatus('err', 'Errore connessione');
  console.error(error);
 });
-
+ 
 // ===== RICEVUTE LISTENER =====
 onSnapshot(ricevuteRef, function(snapshot) {
  window._ricevute = {};
@@ -383,7 +383,7 @@ onSnapshot(ricevuteRef, function(snapshot) {
  renderRicevuteGrid();
  if (window._ricCategoria) renderRicLista();
 }, function(err) { console.error(err); });
-
+ 
 // ===== TAB =====
 window.switchTab = function(tab) {
  window._tabAttivo = tab;
@@ -396,7 +396,7 @@ window.switchTab = function(tab) {
  document.getElementById('fab-nuova').style.display = isRic ? 'none' : 'block';
  if (!isRic) renderLista();
 };
-
+ 
 // ===== RENDER RICEVUTE GRID =====
 function renderRicevuteGrid() {
  var el = document.getElementById('ricevute-grid');
@@ -412,7 +412,7 @@ function renderRicevuteGrid() {
      + '</div>';
  }).join('');
 }
-
+ 
 // ===== MODAL RICEVUTE =====
 window.openModalRic = function(categoriaId) {
  window._ricCategoria = categoriaId;
@@ -433,16 +433,16 @@ window.openModalRic = function(categoriaId) {
  renderRicLista();
  document.getElementById('modal-ric-overlay').classList.add('open');
 };
-
+ 
 window.closeModalRic = function() {
  document.getElementById('modal-ric-overlay').classList.remove('open');
  window._ricCategoria = null;
 };
-
+ 
 window.overlayClickRic = function(e) {
  if (e.target === document.getElementById('modal-ric-overlay')) window.closeModalRic();
 };
-
+ 
 function renderRicLista() {
  var lista = window._ricevute[window._ricCategoria] || [];
  var el = document.getElementById('ric-lista');
@@ -468,7 +468,7 @@ function renderRicLista() {
      + '</div>';
  }).join('');
 }
-
+ 
 window.toggleFormRic = function() {
  window._ricFormOpen = !window._ricFormOpen;
  window._editRicId = null;
@@ -486,13 +486,13 @@ window.toggleFormRic = function() {
    document.getElementById('ric-filename').value = '';
  }
 };
-
+ 
 window.selezionaPagatoCon = function(val) {
  window._ricPagatoCon = val;
  document.getElementById('btn-conto').className = 'pagato-con-btn' + (val === 'conto' ? ' selected-conto' : '');
  document.getElementById('btn-io').className = 'pagato-con-btn' + (val === 'io' ? ' selected-io' : '');
 };
-
+ 
 window.handleRicFile = function(input) {
  if (!input.files[0]) return;
  window._ricFileUpload = input.files[0];
@@ -522,7 +522,7 @@ window.handleRicFile = function(input) {
    }
  );
 };
-
+ 
 window.modificaRicevuta = function(id) {
  var r = (window._ricevute[window._ricCategoria] || []).find(function(x){ return x.id === id; });
  if (!r) return;
@@ -541,7 +541,7 @@ window.modificaRicevuta = function(id) {
  document.getElementById('btn-io').className = 'pagato-con-btn' + (r.pagatoCon === 'io' ? ' selected-io' : '');
  document.getElementById('ric-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
 };
-
+ 
 window.salvaRicevuta = async function() {
  var data = document.getElementById('ric-data').value;
  if (!data) { alert('Inserisci la data'); return; }
@@ -565,24 +565,24 @@ window.salvaRicevuta = async function() {
  window._editRicId = null;
  window.toggleFormRic();
 };
-
+ 
 window.eliminaRicevuta = async function(id) {
  if (!confirm('Eliminare questa ricevuta?')) return;
  await deleteDoc(doc(db, "ricevute", id));
 };
-
+ 
 // ===== SPESE =====
 window.marcaPagata = function(id) {
  window._pagamentoId = id;
  document.getElementById('p-data').value = oggi();
  document.getElementById('pagamento-overlay').classList.add('open');
 };
-
+ 
 window.chiudiPagamento = function() {
  document.getElementById('pagamento-overlay').classList.remove('open');
  window._pagamentoId = null;
 };
-
+ 
 window.confermaPagamento = async function() {
  var data = document.getElementById('p-data').value;
  if (!data) { alert('Inserisci la data di pagamento'); return; }
@@ -590,18 +590,18 @@ window.confermaPagamento = async function() {
  await updateDoc(doc(db, "spese", window._pagamentoId), { pagata: true, dataPagamento: data });
  window.chiudiPagamento();
 };
-
+ 
 window.marcaNonPagata = async function(id) {
  setSyncStatus('loading', 'Salvataggio...');
  await updateDoc(doc(db, "spese", id), { pagata: false, dataPagamento: null });
 };
-
+ 
 window.eliminaSpesa = async function(id) {
  if (confirm('Eliminare questa spesa?')) await deleteDoc(doc(db, "spese", id));
 };
-
+ 
 window.editSpesa = function(id) { window.openModal(id); };
-
+ 
 window.saveSpesa = async function() {
  var nome = document.getElementById('f-nome').value.trim();
  var importo = document.getElementById('f-importo').value;
@@ -630,7 +630,7 @@ window.saveSpesa = async function() {
  }
  window.closeModal();
 };
-
+ 
 function renderLista() {
  var lista = window._spese.slice();
  if (window._tabAttivo === 'casa1') lista = lista.filter(function(s){ return s.immobile === 'casa1'; });
@@ -678,7 +678,7 @@ function renderLista() {
      + '</div></div>';
  }).join('');
 }
-
+ 
 window.setFilter = function(f) {
  window._filtroAttivo = f;
  ['tutte','pagate','nonpagate','scadute'].forEach(function(x) {
@@ -686,7 +686,7 @@ window.setFilter = function(f) {
  });
  renderLista();
 };
-
+ 
 window.openModal = function(id) {
  window._editId = id || null;
  window._pagataToggle = false;
@@ -720,16 +720,16 @@ window.openModal = function(id) {
  document.getElementById('toggle-pagata').className = 'toggle' + (window._pagataToggle ? ' on' : '');
  document.getElementById('modal-overlay').classList.add('open');
 };
-
+ 
 window.closeModal = function() {
  document.getElementById('modal-overlay').classList.remove('open');
  window._editId = null;
 };
-
+ 
 window.overlayClick = function(e) {
  if (e.target === document.getElementById('modal-overlay')) window.closeModal();
 };
-
+ 
 window.togglePagata = function() {
  window._pagataToggle = !window._pagataToggle;
  document.getElementById('toggle-pagata').className = 'toggle' + (window._pagataToggle ? ' on' : '');
@@ -738,14 +738,14 @@ window.togglePagata = function() {
  if (window._pagataToggle) document.getElementById('f-data-pagamento').value = oggi();
  else document.getElementById('f-data-pagamento').value = '';
 };
-
+ 
 window.handleFile = function(input) {
  if (input.files[0]) {
    window._fileAllegato = { name: input.files[0].name };
    document.getElementById('attach-name').textContent = '📎 ' + input.files[0].name;
  }
 };
-
+ 
 window.formatIban = function(input) {
  var val = input.value.replace(/\s/g,'').toUpperCase().replace(/[^A-Z0-9]/g,'');
  var groups = val.match(/.{1,4}/g);
@@ -763,3 +763,4 @@ window.formatIban = function(input) {
 </script>
 </body>
 </html>
+ 
