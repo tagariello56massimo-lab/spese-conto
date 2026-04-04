@@ -139,6 +139,11 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 .pagato-con-btn.selected-io { background: var(--accent2); color: white; border-color: var(--accent2); }
 .btn-salva-ric { width: 100%; padding: 13px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-top: 4px; }
 .btn-nuova-ric { width: 100%; padding: 12px; background: var(--card); color: var(--accent); border: 0.5px solid var(--accent); border-radius: 10px; font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-bottom: 10px; }
+.upload-area { border: 1.5px dashed var(--border); border-radius: 10px; padding: 16px; text-align: center; cursor: pointer; margin-top: 6px; transition: border-color 0.15s; }
+.upload-area:hover { border-color: var(--accent); }
+.upload-area.has-file { border-color: var(--success); background: #f0faf4; }
+.upload-area-text { font-size: 13px; color: var(--muted); }
+.upload-area-text span { color: var(--accent); font-weight: 500; }
 </style>
 </head>
 <body>
@@ -263,9 +268,11 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
      </div>
    </div>
    <div class="form-group">
-     <label>Link documento (Google Drive)</label>
-     <input type="url" id="ric-link" placeholder="Incolla qui il link Google Drive..." autocomplete="off" autocorrect="off" spellcheck="false" />
-     <div class="hint">Carica il file su Google Drive, poi copia il link di condivisione e incollalo qui</div>
+     <label>Documento (PDF / Foto)</label>
+     <div class="upload-area" onclick="document.getElementById('ric-file-input').click()">
+       <input type="file" id="ric-file-input" accept=".pdf,.jpg,.jpeg,.png" onchange="handleRicFile(this)" style="display:none" />
+       <div class="upload-area-text" id="upload-area-text">📎 <span>Scegli file</span><br><small>PDF, JPG, PNG (max 5MB)</small></div>
+     </div>
    </div>
    <div class="form-group">
      <label>Nome documento (facoltativo)</label>
@@ -419,15 +426,15 @@ window.openModalRic = function(categoriaId) {
  window._ricFormOpen = false;
  window._editRicId = null;
  window._ricPagatoCon = null;
- window._ricFileUrl = null;
+ window._ricFileBase64 = null;
  window._ricFileName = null;
  var cat = CATEGORIE_RIC.find(function(c){ return c.id === categoriaId; });
  document.getElementById('modal-ric-title').textContent = cat ? cat.emoji + ' ' + cat.nome : 'Ricevute';
  document.getElementById('ric-form').style.display = 'none';
  document.getElementById('btn-nuova-ric').textContent = '+ Nuova ricevuta';
  document.getElementById('ric-data').value = oggi();
- document.getElementById('ric-link').value = '';
  document.getElementById('ric-filename').value = '';
+ document.getElementById('upload-area-text').innerHTML = '📎 <span>Scegli file</span><br><small>PDF, JPG, PNG (max 5MB)</small>';
  document.getElementById('btn-conto').className = 'pagato-con-btn';
  document.getElementById('btn-io').className = 'pagato-con-btn';
  renderRicLista();
@@ -458,7 +465,7 @@ function renderRicLista() {
      + '<div>'
      + '<div class="ric-item-data">📅 ' + fmtDate(r.data) + '</div>'
      + '<div class="ric-item-pagato ' + pagatoClass + '">' + pagatoLabel + '</div>'
-     + (r.fileUrl ? '<div class="ric-item-foto" onclick="window.open(\'' + esc(r.fileUrl) + '\',\'_blank\')">📎 ' + esc(r.fileName||'Documento') + '</div>' : '')
+     + (r.fileBase64 ? '<div class="ric-item-foto" onclick="apriFile(\'' + r.id + '\')">📎 ' + esc(r.fileName||'Documento') + '</div>' : (r.fileUrl ? '<div class="ric-item-foto" onclick="window.open(\'' + esc(r.fileUrl) + '\',\'_blank\')">📎 ' + esc(r.fileName||'Documento') + '</div>' : ''))
      + '</div>'
      + '<div style="display:flex;gap:6px">'
      + '<button class="btn-small" style="padding:6px 10px;font-size:11px" onclick="modificaRicevuta(\'' + r.id + '\')">Modifica</button>'
@@ -478,13 +485,33 @@ window.toggleFormRic = function() {
  if (window._ricFormOpen) {
    document.getElementById('ric-data').value = oggi();
    window._ricPagatoCon = null;
-   window._ricFileUrl = null;
+   window._ricFileBase64 = null;
    window._ricFileName = null;
    document.getElementById('btn-conto').className = 'pagato-con-btn';
    document.getElementById('btn-io').className = 'pagato-con-btn';
-   document.getElementById('ric-link').value = '';
+   document.getElementById('ric-file-input').value = '';
    document.getElementById('ric-filename').value = '';
+   document.getElementById('upload-area-text').innerHTML = '📎 <span>Scegli file</span><br><small>PDF, JPG, PNG (max 5MB)</small>';
+   document.getElementById('ric-file-input').closest('.upload-area').classList.remove('has-file');
  }
+};
+ 
+window.handleRicFile = function(input) {
+ if (!input.files[0]) return;
+ var file = input.files[0];
+ if (file.size > 5 * 1024 * 1024) { alert('File troppo grande! Massimo 5MB.'); input.value = ''; return; }
+ var reader = new FileReader();
+ reader.onload = function(e) {
+   window._ricFileBase64 = e.target.result;
+   window._ricFileName = file.name;
+   var area = document.getElementById('upload-area-text');
+   area.innerHTML = '✅ <span>' + file.name + '</span>';
+   document.getElementById('ric-file-input').closest('.upload-area').classList.add('has-file');
+   if (!document.getElementById('ric-filename').value) {
+     document.getElementById('ric-filename').value = file.name.replace(/\.[^.]+$/, '');
+   }
+ };
+ reader.readAsDataURL(file);
 };
  
 window.selezionaPagatoCon = function(val) {
@@ -500,16 +527,27 @@ window.modificaRicevuta = function(id) {
  window._editRicId = id;
  window._ricFormOpen = true;
  window._ricPagatoCon = r.pagatoCon || null;
- window._ricFileUrl = r.fileUrl || null;
+ window._ricFileBase64 = r.fileBase64 || null;
  window._ricFileName = r.fileName || null;
  document.getElementById('ric-form').style.display = 'block';
  document.getElementById('ric-form').querySelector('h4').textContent = 'Modifica ricevuta';
  document.getElementById('btn-nuova-ric').textContent = '✕ Annulla';
  document.getElementById('ric-data').value = r.data || '';
- document.getElementById('ric-link').value = r.fileUrl || '';
  document.getElementById('ric-filename').value = r.fileName || '';
  document.getElementById('btn-conto').className = 'pagato-con-btn' + (r.pagatoCon === 'conto' ? ' selected-conto' : '');
  document.getElementById('btn-io').className = 'pagato-con-btn' + (r.pagatoCon === 'io' ? ' selected-io' : '');
+ var area = document.getElementById('upload-area-text');
+ if (r.fileName) {
+   area.innerHTML = '✅ <span>' + r.fileName + '</span>';
+   document.getElementById('ric-file-input').closest('.upload-area').classList.add('has-file');
+ } else if (r.fileUrl) {
+   area.innerHTML = '🔗 <span>Link esistente</span>';
+   document.getElementById('ric-file-input').closest('.upload-area').classList.add('has-file');
+ } else {
+   area.innerHTML = '📎 <span>Scegli file</span><br><small>PDF, JPG, PNG (max 5MB)</small>';
+   document.getElementById('ric-file-input').closest('.upload-area').classList.remove('has-file');
+ }
+ document.getElementById('ric-file-input').value = '';
  document.getElementById('ric-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
 };
  
@@ -517,29 +555,45 @@ window.salvaRicevuta = async function() {
  var data = document.getElementById('ric-data').value;
  if (!data) { alert('Inserisci la data'); return; }
  if (!window._ricPagatoCon) { alert('Seleziona come è stata pagata'); return; }
- var link = document.getElementById('ric-link').value.trim();
  var fileName = document.getElementById('ric-filename').value.trim();
  setSyncStatus('loading', 'Salvataggio...');
  var dati = {
    categoria: window._ricCategoria,
    data: data,
    pagatoCon: window._ricPagatoCon,
-   fileUrl: link || null,
-   fileName: fileName || (link ? 'Documento' : null),
+   fileName: fileName || window._ricFileName || null,
+   fileBase64: window._ricFileBase64 || null,
  };
  if (window._editRicId) {
+   var existing = (window._ricevute[window._ricCategoria] || []).find(function(x){ return x.id === window._editRicId; });
+   if (!window._ricFileBase64) {
+     dati.fileBase64 = existing ? (existing.fileBase64 || null) : null;
+     dati.fileUrl = existing ? (existing.fileUrl || null) : null;
+   }
    await updateDoc(doc(db, "ricevute", window._editRicId), dati);
  } else {
    dati.timestamp = serverTimestamp();
    await addDoc(ricevuteRef, dati);
  }
  window._editRicId = null;
+ window._ricFileBase64 = null;
  window.toggleFormRic();
 };
  
 window.eliminaRicevuta = async function(id) {
  if (!confirm('Eliminare questa ricevuta?')) return;
  await deleteDoc(doc(db, "ricevute", id));
+};
+ 
+window.apriFile = function(id) {
+ var r = (window._ricevute[window._ricCategoria] || []).find(function(x){ return x.id === id; });
+ if (!r || !r.fileBase64) return;
+ var win = window.open('', '_blank');
+ if (r.fileBase64.startsWith('data:application/pdf')) {
+   win.document.write('<iframe src="' + r.fileBase64 + '" width="100%" height="100%" style="border:none;margin:0;padding:0"></iframe>');
+ } else {
+   win.document.write('<img src="' + r.fileBase64 + '" style="max-width:100%;display:block;margin:auto">');
+ }
 };
  
 // ===== SPESE =====
@@ -735,3 +789,14 @@ window.formatIban = function(input) {
 </body>
 </html>
  
+
+
+
+
+
+
+
+
+
+
+
