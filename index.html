@@ -417,8 +417,8 @@ function renderRicevuteGrid() {
 window.openModalRic = function(categoriaId) {
  window._ricCategoria = categoriaId;
  window._ricFormOpen = false;
+ window._editRicId = null;
  window._ricPagatoCon = null;
- window._ricFileUpload = null;
  window._ricFileUrl = null;
  window._ricFileName = null;
  var cat = CATEGORIE_RIC.find(function(c){ return c.id === categoriaId; });
@@ -426,8 +426,8 @@ window.openModalRic = function(categoriaId) {
  document.getElementById('ric-form').style.display = 'none';
  document.getElementById('btn-nuova-ric').textContent = '+ Nuova ricevuta';
  document.getElementById('ric-data').value = oggi();
- document.getElementById('ric-upload-progress').style.display = 'none';
- document.getElementById('ric-upload-filename').textContent = '';
+ document.getElementById('ric-link').value = '';
+ document.getElementById('ric-filename').value = '';
  document.getElementById('btn-conto').className = 'pagato-con-btn';
  document.getElementById('btn-io').className = 'pagato-con-btn';
  renderRicLista();
@@ -493,35 +493,6 @@ window.selezionaPagatoCon = function(val) {
  document.getElementById('btn-io').className = 'pagato-con-btn' + (val === 'io' ? ' selected-io' : '');
 };
  
-window.handleRicFile = function(input) {
- if (!input.files[0]) return;
- window._ricFileUpload = input.files[0];
- window._ricFileName = input.files[0].name;
- document.getElementById('ric-upload-progress').style.display = 'block';
- document.getElementById('ric-upload-filename').textContent = '⏳ ' + window._ricFileName;
- document.getElementById('ric-upload-bar').style.width = '0%';
- // upload immediato su Storage
- var path = 'ricevute/' + window._ricCategoria + '/' + Date.now() + '_' + window._ricFileName;
- var sRef = storageRef(storage, path);
- var uploadTask = uploadBytesResumable(sRef, window._ricFileUpload);
- uploadTask.on('state_changed',
-   function(snapshot) {
-     var pct = (snapshot.bytesTransferred / snapshot.totalBytes * 100).toFixed(0);
-     document.getElementById('ric-upload-bar').style.width = pct + '%';
-   },
-   function(err) {
-     document.getElementById('ric-upload-filename').textContent = '❌ Errore upload: ' + err.message;
-   },
-   function() {
-     getDownloadURL(uploadTask.snapshot.ref).then(function(url) {
-       window._ricFileUrl = url;
-       window._ricFilePath = path;
-       document.getElementById('ric-upload-filename').textContent = '✅ ' + window._ricFileName;
-       document.getElementById('ric-upload-bar').style.width = '100%';
-     });
-   }
- );
-};
  
 window.modificaRicevuta = function(id) {
  var r = (window._ricevute[window._ricCategoria] || []).find(function(x){ return x.id === id; });
