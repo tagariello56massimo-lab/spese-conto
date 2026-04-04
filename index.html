@@ -137,15 +137,6 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 .pagato-con-btn { flex: 1; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--border); cursor: pointer; font-family: 'DM Sans', sans-serif; background: var(--card); color: var(--muted); text-align: center; transition: all 0.15s; }
 .pagato-con-btn.selected-conto { background: var(--success); color: white; border-color: var(--success); }
 .pagato-con-btn.selected-io { background: var(--accent2); color: white; border-color: var(--accent2); }
-.upload-area { border: 1.5px dashed var(--border); border-radius: 10px; padding: 16px; text-align: center; cursor: pointer; margin-top: 6px; transition: border-color 0.15s; }
-.upload-area:hover { border-color: var(--accent); }
-.upload-area input { display: none; }
-.upload-area-text { font-size: 13px; color: var(--muted); }
-.upload-area-text span { color: var(--accent); font-weight: 500; }
-.upload-progress { margin-top: 8px; }
-.upload-bar-bg { background: var(--border); border-radius: 4px; height: 4px; width: 100%; margin-top: 6px; }
-.upload-bar { background: var(--accent); height: 4px; border-radius: 4px; width: 0%; transition: width 0.3s; }
-.upload-filename { font-size: 11px; color: var(--success); margin-top: 4px; }
 .btn-salva-ric { width: 100%; padding: 13px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-top: 4px; }
 .btn-nuova-ric { width: 100%; padding: 12px; background: var(--card); color: var(--accent); border: 0.5px solid var(--accent); border-radius: 10px; font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-bottom: 10px; }
 </style>
@@ -272,15 +263,13 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
      </div>
    </div>
    <div class="form-group">
-     <label>Foto / Documento</label>
-     <div class="upload-area" onclick="document.getElementById('ric-file-input').click()">
-       <input type="file" id="ric-file-input" accept=".pdf,.jpg,.jpeg,.png" onchange="handleRicFile(this)" />
-       <div class="upload-area-text">📎 <span>Scegli file</span> o trascina qui<br><small>PDF, JPG, PNG</small></div>
-     </div>
-     <div class="upload-progress" id="ric-upload-progress" style="display:none">
-       <div class="upload-bar-bg"><div class="upload-bar" id="ric-upload-bar"></div></div>
-       <div class="upload-filename" id="ric-upload-filename"></div>
-     </div>
+     <label>Link documento (Google Drive)</label>
+     <input type="url" id="ric-link" placeholder="Incolla qui il link Google Drive..." autocomplete="off" autocorrect="off" spellcheck="false" />
+     <div class="hint">Carica il file su Google Drive, poi copia il link di condivisione e incollalo qui</div>
+   </div>
+   <div class="form-group">
+     <label>Nome documento (facoltativo)</label>
+     <input type="text" id="ric-filename" placeholder="es. Ricevuta gennaio 2026" autocomplete="off" />
    </div>
    <button class="btn-salva-ric" onclick="salvaRicevuta()">Salva ricevuta</button>
  </div>
@@ -305,7 +294,6 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 const firebaseConfig = {
  apiKey: "AIzaSyBFzRfzZUUNSSJ3w08zG1K08aMpTpSJ0zI",
@@ -319,7 +307,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const storage = getStorage(app);
 const speseRef = collection(db, "spese");
 const ricevuteRef = collection(db, "ricevute");
 
@@ -475,7 +462,7 @@ function renderRicLista() {
      + '</div>'
      + '<div style="display:flex;gap:6px">'
      + '<button class="btn-small" style="padding:6px 10px;font-size:11px" onclick="modificaRicevuta(\'' + r.id + '\')">Modifica</button>'
-     + '<button class="btn-small danger" style="padding:6px 10px;font-size:11px" onclick="eliminaRicevuta(\'' + r.id + '\'' + (r.filePath ? ',\'' + esc(r.filePath) + '\'' : '') + ')">Elimina</button>'
+     + '<button class="btn-small danger" style="padding:6px 10px;font-size:11px" onclick="eliminaRicevuta(\'' + r.id + '\')">Elimina</button>'
      + '</div>'
      + '</div>'
      + '</div>';
@@ -491,14 +478,12 @@ window.toggleFormRic = function() {
  if (window._ricFormOpen) {
    document.getElementById('ric-data').value = oggi();
    window._ricPagatoCon = null;
-   window._ricFileUpload = null;
    window._ricFileUrl = null;
    window._ricFileName = null;
    document.getElementById('btn-conto').className = 'pagato-con-btn';
    document.getElementById('btn-io').className = 'pagato-con-btn';
-   document.getElementById('ric-upload-progress').style.display = 'none';
-   document.getElementById('ric-upload-filename').textContent = '';
-   document.getElementById('ric-file-input').value = '';
+   document.getElementById('ric-link').value = '';
+   document.getElementById('ric-filename').value = '';
  }
 };
 
@@ -545,20 +530,15 @@ window.modificaRicevuta = function(id) {
  window._ricFormOpen = true;
  window._ricPagatoCon = r.pagatoCon || null;
  window._ricFileUrl = r.fileUrl || null;
- window._ricFilePath = r.filePath || null;
  window._ricFileName = r.fileName || null;
- window._ricFileUpload = null;
  document.getElementById('ric-form').style.display = 'block';
  document.getElementById('ric-form').querySelector('h4').textContent = 'Modifica ricevuta';
  document.getElementById('btn-nuova-ric').textContent = '✕ Annulla';
  document.getElementById('ric-data').value = r.data || '';
+ document.getElementById('ric-link').value = r.fileUrl || '';
+ document.getElementById('ric-filename').value = r.fileName || '';
  document.getElementById('btn-conto').className = 'pagato-con-btn' + (r.pagatoCon === 'conto' ? ' selected-conto' : '');
  document.getElementById('btn-io').className = 'pagato-con-btn' + (r.pagatoCon === 'io' ? ' selected-io' : '');
- document.getElementById('ric-upload-progress').style.display = r.fileName ? 'block' : 'none';
- document.getElementById('ric-upload-filename').textContent = r.fileName ? '✅ ' + r.fileName : '';
- document.getElementById('ric-upload-bar').style.width = r.fileName ? '100%' : '0%';
- document.getElementById('ric-file-input').value = '';
- // scroll al form
  document.getElementById('ric-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
 };
 
@@ -566,15 +546,15 @@ window.salvaRicevuta = async function() {
  var data = document.getElementById('ric-data').value;
  if (!data) { alert('Inserisci la data'); return; }
  if (!window._ricPagatoCon) { alert('Seleziona come è stata pagata'); return; }
- if (window._ricFileUpload && !window._ricFileUrl) { alert('Attendi il completamento del caricamento del file'); return; }
+ var link = document.getElementById('ric-link').value.trim();
+ var fileName = document.getElementById('ric-filename').value.trim();
  setSyncStatus('loading', 'Salvataggio...');
  var dati = {
    categoria: window._ricCategoria,
    data: data,
    pagatoCon: window._ricPagatoCon,
-   fileUrl: window._ricFileUrl || null,
-   filePath: window._ricFilePath || null,
-   fileName: window._ricFileName || null,
+   fileUrl: link || null,
+   fileName: fileName || (link ? 'Documento' : null),
  };
  if (window._editRicId) {
    await updateDoc(doc(db, "ricevute", window._editRicId), dati);
@@ -586,11 +566,8 @@ window.salvaRicevuta = async function() {
  window.toggleFormRic();
 };
 
-window.eliminaRicevuta = async function(id, filePath) {
+window.eliminaRicevuta = async function(id) {
  if (!confirm('Eliminare questa ricevuta?')) return;
- if (filePath) {
-   try { await deleteObject(storageRef(storage, filePath)); } catch(e) { console.warn('File già eliminato o non trovato'); }
- }
  await deleteDoc(doc(db, "ricevute", id));
 };
 
