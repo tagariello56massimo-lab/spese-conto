@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Spese Condo">
+<meta name="apple-mobile-web-app-title" content="Spese Generali">
 <meta name="theme-color" content="#2D4A3E">
-<title>Spese Condominio</title>
+<title>Spese Generali</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -151,8 +151,8 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 <div class="header">
  <div class="header-inner">
    <div>
-     <h1>Spese Condominio</h1>
-     <p>Gestisci le spese dei tuoi immobili</p>
+     <h1>Spese Generali</h1>
+     <p>Gestisci le spese e le ricevute</p>
    </div>
    <div class="sync-status" id="sync-status">
      <div class="sync-dot loading" id="sync-dot"></div>
@@ -231,11 +231,6 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
    <label>Data pagamento</label>
    <input type="date" id="f-data-pagamento" />
  </div>
- <div class="form-group">
-   <label>Documento allegato</label>
-   <input type="file" id="f-file" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this)" />
-   <div class="hint" id="attach-name"></div>
- </div>
  <button class="btn-save" onclick="saveSpesa()">Salva</button>
  <button class="btn-cancel" onclick="closeModal()">Annulla</button>
 </div>
@@ -283,6 +278,15 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
  
  <button class="btn-cancel" onclick="closeModalRic()">Chiudi</button>
 </div>
+</div>
+ 
+<!-- VISUALIZZATORE FILE INTERNO -->
+<div id="file-viewer-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:500;flex-direction:column;">
+ <div style="display:flex;justify-content:space-between;align-items:center;padding:calc(16px + var(--safe-top)) 16px 12px;background:#1a1713;">
+   <span id="file-viewer-title" style="color:white;font-size:15px;font-weight:500;font-family:'DM Sans',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80%"></span>
+   <button onclick="chiudiFileViewer()" style="background:rgba(255,255,255,0.15);border:none;color:white;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;padding:8px 16px;border-radius:20px;cursor:pointer;">✕ Chiudi</button>
+ </div>
+ <div id="file-viewer-content" style="flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;padding:8px;"></div>
 </div>
  
 <!-- MODAL PAGAMENTO SPESE -->
@@ -587,13 +591,27 @@ window.eliminaRicevuta = async function(id) {
  
 window.apriFile = function(id) {
  var r = (window._ricevute[window._ricCategoria] || []).find(function(x){ return x.id === id; });
- if (!r || !r.fileBase64) return;
- var win = window.open('', '_blank');
- if (r.fileBase64.startsWith('data:application/pdf')) {
-   win.document.write('<iframe src="' + r.fileBase64 + '" width="100%" height="100%" style="border:none;margin:0;padding:0"></iframe>');
- } else {
-   win.document.write('<img src="' + r.fileBase64 + '" style="max-width:100%;display:block;margin:auto">');
+ if (!r) return;
+ var overlay = document.getElementById('file-viewer-overlay');
+ var content = document.getElementById('file-viewer-content');
+ var title = document.getElementById('file-viewer-title');
+ title.textContent = r.fileName || 'Documento';
+ content.innerHTML = '';
+ if (r.fileBase64) {
+   if (r.fileBase64.startsWith('data:application/pdf')) {
+     content.innerHTML = '<iframe src="' + r.fileBase64 + '" style="width:100%;height:100%;min-height:80vh;border:none;border-radius:8px;"></iframe>';
+   } else {
+     content.innerHTML = '<img src="' + r.fileBase64 + '" style="max-width:100%;max-height:85vh;border-radius:8px;object-fit:contain;">';
+   }
+ } else if (r.fileUrl) {
+   content.innerHTML = '<iframe src="' + r.fileUrl + '" style="width:100%;height:100%;min-height:80vh;border:none;border-radius:8px;"></iframe>';
  }
+ overlay.style.display = 'flex';
+};
+ 
+window.chiudiFileViewer = function() {
+ document.getElementById('file-viewer-overlay').style.display = 'none';
+ document.getElementById('file-viewer-content').innerHTML = '';
 };
  
 // ===== SPESE =====
