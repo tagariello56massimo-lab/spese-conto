@@ -5,22 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Spese Generali">
-<meta name="theme-color" content="#2D4A3E">
-<title>Spese Generali</title>
+<meta name="apple-mobile-web-app-title" content="Documenti Medici">
+<meta name="theme-color" content="#1A3A5C">
+<title>Documenti Medici</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 :root {
---bg: #F5F2EB; --card: #FEFCF8; --text: #1A1713; --muted: #7A7468;
---accent: #2D4A3E; --accent2: #C4873A; --danger: #B84040; --success: #2D7A4F;
---border: rgba(26,23,19,0.12); --radius: 14px;
+--bg: #F0F4F8; --card: #FFFFFF; --text: #1A2A3A; --muted: #6A7A8A;
+--accent: #1A3A5C; --accent2: #2E86C1; --danger: #B84040; --success: #2D7A4F;
+--border: rgba(26,58,92,0.12); --radius: 14px;
 --safe-top: env(safe-area-inset-top, 0px);
 --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); }
 .app { max-width: 480px; margin: 0 auto; padding-bottom: calc(90px + var(--safe-bottom)); min-height: 100vh; }
+
+/* HEADER */
 .header { background: var(--accent); padding: calc(28px + var(--safe-top)) 20px 0; color: white; }
 .header-inner { padding-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-end; }
 .header h1 { font-family: 'DM Serif Display', serif; font-size: 24px; font-weight: 400; margin-bottom: 3px; }
@@ -31,281 +33,133 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 .sync-dot.err { background: #eb5757; }
 .sync-dot.loading { background: #f2c94c; animation: pulse 1s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-.tab-bar { background: var(--accent); display: flex; padding: 0 16px 16px; gap: 8px; overflow-x: auto; scrollbar-width: none; }
-.tab-bar::-webkit-scrollbar { display: none; }
-.tab { padding: 7px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: rgba(255,255,255,0.15); color: white; white-space: nowrap; font-family: 'DM Sans', sans-serif; flex-shrink: 0; }
-.tab.active { background: white; color: var(--accent); }
+
+/* SPECIALISTI GRID */
 .section { padding: 16px 16px 0; }
-.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-.summary-card { background: var(--card); border-radius: var(--radius); padding: 14px; border: 0.5px solid var(--border); }
-.summary-card .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-.summary-card .value { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); }
-.summary-card .value.danger { color: var(--danger); }
-.summary-card .value.success { color: var(--success); }
-.filter-row { display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
-.filter-row::-webkit-scrollbar { display: none; }
-.filter-btn { padding: 6px 14px; border-radius: 20px; font-size: 12px; border: 0.5px solid var(--border); background: var(--card); color: var(--muted); cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; flex-shrink: 0; }
-.filter-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
-.spesa-card { background: var(--card); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 14px 16px; margin-bottom: 10px; }
-.spesa-card.scaduta { border-left: 3px solid var(--danger); }
-.spesa-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
-.spesa-nome { font-weight: 500; font-size: 15px; line-height: 1.3; }
-.spesa-importo { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--accent); white-space: nowrap; }
-.spesa-meta { display: flex; gap: 6px; align-items: center; margin-top: 7px; flex-wrap: wrap; }
-.badge { font-size: 11px; padding: 3px 8px; border-radius: 10px; font-weight: 500; }
-.badge.casa1 { background: #E8F0ED; color: #2D4A3E; }
-.badge.montagna { background: #FBF0E4; color: #7A4A10; }
-.badge.pagata { background: #E6F4EC; color: #2D7A4F; }
-.badge.nonpagata { background: #FAEAEA; color: #B84040; }
-.spesa-date { font-size: 12px; color: var(--muted); }
-.spesa-pagata-date { font-size: 12px; color: var(--success); margin-top: 4px; }
-.spesa-iban { font-size: 12px; color: var(--muted); font-family: monospace; margin-top: 5px; }
-.spesa-iban span { color: var(--text); }
-.spesa-attach { font-size: 11px; color: var(--accent); margin-top: 4px; }
-.scadenza-warning { font-size: 11px; color: var(--danger); margin-top: 4px; font-weight: 500; }
-.spesa-actions { display: flex; gap: 8px; margin-top: 10px; border-top: 0.5px solid var(--border); padding-top: 10px; }
-.btn-small { flex: 1; padding: 8px 4px; border-radius: 8px; font-size: 12px; font-weight: 500; border: 0.5px solid var(--border); cursor: pointer; font-family: 'DM Sans', sans-serif; background: var(--card); color: var(--text); }
-.btn-small.success { background: var(--success); color: white; border-color: var(--success); }
-.btn-small.danger { background: var(--danger); color: white; border-color: var(--danger); }
-.fab { position: fixed; bottom: calc(24px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 280px; background: var(--accent2); color: white; border: none; border-radius: 30px; padding: 15px 24px; font-size: 16px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 4px 20px rgba(196,135,58,0.4); z-index: 50; }
-.modal-overlay { position: fixed; inset: 0; background: rgba(26,23,19,0.55); display: flex; align-items: flex-end; justify-content: center; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+.specialisti-grid { display: flex; flex-direction: column; gap: 10px; }
+.specialista-card { background: var(--card); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s; }
+.specialista-card:active { background: #eef2f7; }
+.specialista-left { display: flex; align-items: center; gap: 14px; }
+.specialista-emoji { font-size: 28px; width: 44px; height: 44px; background: #EEF4FB; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.specialista-info { display: flex; flex-direction: column; gap: 2px; }
+.specialista-nome { font-weight: 500; font-size: 15px; }
+.specialista-count { font-size: 12px; color: var(--muted); }
+.specialista-arrow { color: var(--muted); font-size: 20px; }
+
+/* FAB */
+.fab { position: fixed; bottom: calc(24px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 280px; background: var(--accent2); color: white; border: none; border-radius: 30px; padding: 15px 24px; font-size: 16px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 4px 20px rgba(46,134,193,0.4); z-index: 50; }
+
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(26,42,58,0.55); display: flex; align-items: flex-end; justify-content: center; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
-.modal { background: var(--card); border-radius: 20px 20px 0 0; width: 100%; max-width: 480px; padding: 8px 20px calc(28px + var(--safe-bottom)); max-height: 92vh; overflow-y: auto; -webkit-overflow-scrolling: touch; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1); }
+.modal { background: var(--card); border-radius: 20px 20px 0 0; width: 100%; max-width: 480px; padding: 8px 20px calc(28px + var(--safe-bottom)); max-height: 92vh; overflow-y: auto; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1); }
 .modal-overlay.open .modal { transform: translateY(0); }
 .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 20px; }
 .modal h2 { font-family: 'DM Serif Display', serif; font-size: 20px; font-weight: 400; margin-bottom: 20px; }
+
+/* FORM */
 .form-group { margin-bottom: 15px; }
-.form-group label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
-.form-group input, .form-group select { width: 100%; padding: 12px 14px; border: 0.5px solid var(--border); border-radius: 10px; font-size: 16px; font-family: 'DM Sans', sans-serif; background: white; color: var(--text); -webkit-appearance: none; }
-.form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); }
-.iban-input { font-family: monospace !important; letter-spacing: 1px; font-size: 14px !important; }
-.hint { font-size: 11px; margin-top: 5px; color: var(--muted); }
-.hint.valid { color: var(--success); }
-.hint.invalid { color: var(--danger); }
-.toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
-.toggle-label { font-size: 16px; color: var(--text); }
-.toggle { width: 50px; height: 30px; background: #D1CBC0; border-radius: 15px; cursor: pointer; position: relative; transition: background 0.25s; border: none; flex-shrink: 0; }
-.toggle::after { content: ''; position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: transform 0.25s; box-shadow: 0 1px 4px rgba(0,0,0,0.25); }
-.toggle.on { background: var(--success); }
-.toggle.on::after { transform: translateX(20px); }
-.btn-save { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-top: 10px; }
-.btn-cancel { width: 100%; padding: 13px; background: none; border: none; color: var(--muted); font-size: 14px; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-top: 4px; }
-.empty { text-align: center; padding: 48px 20px; color: var(--muted); }
-.empty-icon { font-size: 48px; margin-bottom: 12px; }
-.pagamento-overlay { position: fixed; inset: 0; background: rgba(26,23,19,0.55); display: flex; align-items: center; justify-content: center; z-index: 300; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding: 20px; }
-.pagamento-overlay.open { opacity: 1; pointer-events: all; }
-.pagamento-box { background: var(--card); border-radius: 20px; padding: 24px 20px; width: 100%; max-width: 320px; transform: scale(0.95); transition: transform 0.2s; }
-.pagamento-overlay.open .pagamento-box { transform: scale(1); }
-.pagamento-box h3 { font-family: 'DM Serif Display', serif; font-size: 18px; font-weight: 400; margin-bottom: 6px; }
-.pagamento-box p { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
-.pagamento-box input[type=date] { width: 100%; padding: 12px 14px; border: 0.5px solid var(--border); border-radius: 10px; font-size: 16px; font-family: 'DM Sans', sans-serif; background: white; color: var(--text); -webkit-appearance: none; margin-bottom: 14px; }
-.pagamento-box input[type=date]:focus { outline: none; border-color: var(--accent); }
-.pagamento-btns { display: flex; gap: 8px; }
-.pagamento-btns button { flex: 1; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; border: 0.5px solid var(--border); }
-.btn-conferma { background: var(--success); color: white; border-color: var(--success) !important; }
-.btn-annulla-pag { background: var(--card); color: var(--muted); }
- 
-/* ========== RICEVUTE ========== */
-#section-ricevute { display: none; padding: 16px 16px 0; }
-.ricevute-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
-.ricevuta-categoria { background: var(--card); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s; }
-.ricevuta-categoria:active { background: #f0ede6; }
-.ricevuta-categoria-left { display: flex; flex-direction: column; gap: 3px; }
-.ricevuta-categoria-nome { font-weight: 500; font-size: 15px; }
-.ricevuta-categoria-count { font-size: 12px; color: var(--muted); }
-.ricevuta-categoria-arrow { color: var(--muted); font-size: 18px; }
- 
-/* Modale ricevute */
-.modal-ric { background: var(--card); border-radius: 20px 20px 0 0; width: 100%; max-width: 480px; padding: 8px 20px calc(28px + var(--safe-bottom)); max-height: 92vh; overflow-y: auto; -webkit-overflow-scrolling: touch; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1); }
-.modal-overlay.open .modal-ric { transform: translateY(0); }
- 
-/* Lista ricevute dentro modale */
-.ric-list { margin-bottom: 16px; }
-.ric-item { background: white; border-radius: 12px; border: 0.5px solid var(--border); padding: 12px 14px; margin-bottom: 8px; }
-.ric-item-top { display: flex; justify-content: space-between; align-items: flex-start; }
-.ric-item-data { font-weight: 500; font-size: 14px; }
-.ric-item-pagato { font-size: 12px; margin-top: 4px; }
-.ric-item-pagato.conto { color: var(--success); }
-.ric-item-pagato.io { color: var(--accent2); }
-.ric-item-foto { font-size: 11px; color: var(--accent); margin-top: 4px; cursor: pointer; text-decoration: underline; }
-.ric-item-actions { display: flex; gap: 6px; margin-top: 10px; border-top: 0.5px solid var(--border); padding-top: 8px; }
- 
-/* Form nuova ricevuta */
-.ric-form { background: white; border-radius: 12px; border: 0.5px solid var(--border); padding: 16px; margin-bottom: 16px; }
-.ric-form h4 { font-family: 'DM Serif Display', serif; font-size: 16px; font-weight: 400; margin-bottom: 14px; color: var(--accent); }
-.pagato-con-row { display: flex; gap: 8px; margin-top: 6px; }
-.pagato-con-btn { flex: 1; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--border); cursor: pointer; font-family: 'DM Sans', sans-serif; background: var(--card); color: var(--muted); text-align: center; transition: all 0.15s; }
-.pagato-con-btn.selected-conto { background: var(--success); color: white; border-color: var(--success); }
-.pagato-con-btn.selected-io { background: var(--accent2); color: white; border-color: var(--accent2); }
-.btn-salva-ric { width: 100%; padding: 13px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-top: 4px; }
-.btn-nuova-ric { width: 100%; padding: 12px; background: var(--card); color: var(--accent); border: 0.5px solid var(--accent); border-radius: 10px; font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-bottom: 10px; }
-.upload-area { border: 1.5px dashed var(--border); border-radius: 10px; padding: 16px; text-align: center; cursor: pointer; margin-top: 6px; transition: border-color 0.15s; }
-.upload-area:hover { border-color: var(--accent); }
+.form-group label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; }
+.form-group input, .form-group textarea { width: 100%; padding: 12px 14px; border: 0.5px solid var(--border); border-radius: 10px; font-size: 16px; font-family: 'DM Sans', sans-serif; background: white; color: var(--text); }
+
+/* UPLOAD */
+.upload-area { border: 1.5px dashed var(--border); border-radius: 10px; padding: 16px; text-align: center; cursor: pointer; margin-top: 6px; }
 .upload-area.has-file { border-color: var(--success); background: #f0faf4; }
-.upload-area-text { font-size: 13px; color: var(--muted); }
-.upload-area-text span { color: var(--accent); font-weight: 500; }
+.file-preview-item { font-size: 12px; background: #f8fafc; padding: 8px 12px; border-radius: 8px; border: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+.remove-file { color: var(--danger); font-weight: bold; cursor: pointer; }
+
+/* ESAMI */
+.esame-item { background: white; border-radius: 12px; border: 0.5px solid var(--border); padding: 14px; margin-bottom: 10px; }
+.esame-tipo { font-weight: 500; font-size: 15px; }
+.esame-file-link { font-size: 12px; color: var(--accent2); margin-top: 8px; cursor: pointer; text-decoration: underline; display: block; }
+.esame-actions { display: flex; gap: 8px; margin-top: 10px; border-top: 0.5px solid var(--border); padding-top: 10px; }
+
+/* VIEWER */
+#file-viewer-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:500; flex-direction:column; }
+#file-viewer-bar { display:flex; justify-content:space-between; align-items:center; padding: 40px 20px 20px; background:#1a2a3a; color: white; }
+#file-viewer-content { flex:1; display:flex; align-items:center; justify-content:center; padding:10px; overflow: auto; }
+
+/* MODAL NUOVO SPEC */
+.center-modal-overlay { position:fixed; inset:0; background:rgba(26,42,58,0.55); display:flex; align-items:center; justify-content:center; z-index:300; opacity:0; pointer-events:none; transition:opacity 0.2s; padding:20px; }
+.center-modal-overlay.open { opacity:1; pointer-events:all; }
+.center-modal-box { background:var(--card); border-radius:20px; padding:24px 20px; width:100%; max-width:340px; }
+.emoji-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+.emoji-opt { font-size:24px; padding:6px; border-radius:8px; cursor:pointer; border:2px solid transparent; }
+.emoji-opt.sel { border-color:var(--accent2); background:#eef4fb; }
 </style>
 </head>
 <body>
+
 <div class="app">
-<div class="header">
- <div class="header-inner">
-   <div>
-     <h1>Spese Generali</h1>
-     <p>Gestisci le spese e le ricevute</p>
-   </div>
-   <div class="sync-status" id="sync-status">
-     <div class="sync-dot loading" id="sync-dot"></div>
-     <span id="sync-text">Connessione...</span>
-   </div>
- </div>
+    <div class="header">
+        <div class="header-inner">
+            <div>
+                <h1>Documenti Medici</h1>
+                <p>Archivio sincronizzato</p>
+            </div>
+            <div class="sync-status" id="sync-status">
+                <div class="sync-dot loading" id="sync-dot"></div>
+                <span id="sync-text">Connessione...</span>
+            </div>
+        </div>
+    </div>
+    <div class="section">
+        <div class="specialisti-grid" id="specialisti-grid"></div>
+    </div>
 </div>
-<div class="tab-bar">
- <button class="tab active" id="tab-tutte" onclick="switchTab('tutte')">Tutte</button>
- <button class="tab" id="tab-casa1" onclick="switchTab('casa1')">Prima casa</button>
- <button class="tab" id="tab-montagna" onclick="switchTab('montagna')">Montagna</button>
- <button class="tab" id="tab-ricevute" onclick="switchTab('ricevute')">Ricevute</button>
+
+<button class="fab" onclick="openNuovoSpecialista()">+ Nuovo specialista</button>
+
+<div class="modal-overlay" id="modal-esami-overlay" onclick="overlayClickEsami(event)">
+    <div class="modal">
+        <div class="modal-handle"></div>
+        <h2 id="modal-esami-title">Caricamento...</h2>
+        <div id="esami-lista"></div>
+        <button class="btn-nuova" id="btn-nuovo-esame" onclick="toggleFormEsame()">+ Nuovo esame / visita</button>
+        
+        <div class="esame-form" id="esame-form" style="display:none; padding: 15px; background: #f8fafc; border-radius: 12px; margin-bottom: 15px;">
+            <div class="form-group"><label>Tipo esame</label><input type="text" id="e-tipo"></div>
+            <div class="form-group"><label>Data</label><input type="date" id="e-data"></div>
+            <div class="form-group"><label>Medico</label><input type="text" id="e-medico"></div>
+            <div class="form-group"><label>Note</label><textarea id="e-note"></textarea></div>
+            <div class="form-group">
+                <label>Documenti (Max 1MB totale consigliato)</label>
+                <div class="upload-area" id="e-upload-area" onclick="document.getElementById('e-file-input').click()">
+                    <input type="file" id="e-file-input" accept=".pdf,.jpg,.jpeg,.png" multiple onchange="handleEsameFiles(this)" style="display:none">
+                    <div id="e-upload-text">📎 Clicca per allegare file</div>
+                </div>
+                <div id="file-preview-list"></div>
+            </div>
+            <button class="btn-save" onclick="salvaEsame()" style="width:100%; padding:15px; background:var(--accent); color:white; border:none; border-radius:10px;">Salva Esame</button>
+        </div>
+        <button class="btn-cancel" onclick="closeModalEsami()" style="width:100%; margin-top:10px;">Chiudi</button>
+    </div>
 </div>
- 
-<!-- SEZIONE SPESE -->
-<div class="section" id="section-spese">
- <div class="summary-grid">
-   <div class="summary-card"><div class="label">Totale spese</div><div class="value" id="tot-totale">€0,00</div></div>
-   <div class="summary-card"><div class="label">Da pagare</div><div class="value danger" id="tot-nonpagato">€0,00</div></div>
-   <div class="summary-card"><div class="label">Pagate</div><div class="value success" id="tot-pagato">€0,00</div></div>
-   <div class="summary-card"><div class="label">In scadenza</div><div class="value danger" id="tot-scadenza">0</div></div>
- </div>
- <div class="filter-row">
-   <button class="filter-btn active" id="f-tutte" onclick="setFilter('tutte')">Tutte</button>
-   <button class="filter-btn" id="f-pagate" onclick="setFilter('pagate')">Pagate</button>
-   <button class="filter-btn" id="f-nonpagate" onclick="setFilter('nonpagate')">Da pagare</button>
-   <button class="filter-btn" id="f-scadute" onclick="setFilter('scadute')">Scadute</button>
- </div>
- <div id="lista-spese"></div>
+
+<div class="center-modal-overlay" id="modal-spec-overlay">
+    <div class="center-modal-box">
+        <h3>Nuovo specialista</h3>
+        <div class="form-group"><label>Nome</label><input type="text" id="spec-nome"></div>
+        <div class="form-group"><label>Icona</label><div class="emoji-row" id="emoji-row"></div></div>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button onclick="closeNuovoSpecialista()" style="flex:1;">Annulla</button>
+            <button onclick="salvaSpecialista()" style="flex:1; background:var(--accent); color:white;">Aggiungi</button>
+        </div>
+    </div>
 </div>
- 
-<!-- SEZIONE RICEVUTE -->
-<div id="section-ricevute">
- <div class="ricevute-grid" id="ricevute-grid"></div>
+
+<div id="file-viewer-overlay">
+    <div id="file-viewer-bar">
+        <span id="file-viewer-title">Documento</span>
+        <button onclick="chiudiFileViewer()" style="background:white; color:black; padding:5px 15px; border-radius:20px; border:none;">Chiudi</button>
+    </div>
+    <div id="file-viewer-content"></div>
 </div>
-</div>
- 
-<button class="fab" id="fab-nuova" onclick="openModal(null)">+ Nuova spesa</button>
- 
-<!-- MODAL SPESE -->
-<div class="modal-overlay" id="modal-overlay" onclick="overlayClick(event)">
-<div class="modal" id="modal">
- <div class="modal-handle"></div>
- <h2 id="modal-title">Nuova spesa</h2>
- <div class="form-group">
-   <label>Descrizione</label>
-   <input type="text" id="f-nome" placeholder="es. Manutenzione ascensore" autocomplete="off" />
- </div>
- <div class="form-group">
-   <label>Importo (€)</label>
-   <input type="number" id="f-importo" placeholder="0,00" step="0.01" min="0" inputmode="decimal" />
- </div>
- <div class="form-group">
-   <label>IBAN beneficiario</label>
-   <input type="text" id="f-iban" class="iban-input" placeholder="IT60 X054 2811 1010 0000 0123 456" maxlength="34" oninput="formatIban(this)" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" />
-   <div class="hint" id="iban-hint">Facoltativo</div>
- </div>
- <div class="form-group">
-   <label>Immobile</label>
-   <select id="f-immobile">
-     <option value="casa1">Prima casa</option>
-     <option value="montagna">Casa di montagna</option>
-   </select>
- </div>
- <div class="form-group">
-   <label>Data scadenza</label>
-   <input type="date" id="f-scadenza" />
- </div>
- <div class="form-group">
-   <div class="toggle-row">
-     <span class="toggle-label">Già pagata</span>
-     <button class="toggle" id="toggle-pagata" onclick="togglePagata()"></button>
-   </div>
- </div>
- <div class="form-group" id="group-data-pagamento" style="display:none">
-   <label>Data pagamento</label>
-   <input type="date" id="f-data-pagamento" />
- </div>
- <button class="btn-save" onclick="saveSpesa()">Salva</button>
- <button class="btn-cancel" onclick="closeModal()">Annulla</button>
-</div>
-</div>
- 
-<!-- MODAL RICEVUTE CATEGORIA -->
-<div class="modal-overlay" id="modal-ric-overlay" onclick="overlayClickRic(event)">
-<div class="modal-ric" id="modal-ric">
- <div class="modal-handle"></div>
- <h2 id="modal-ric-title">Ricevute</h2>
- 
- <!-- Lista ricevute esistenti -->
- <div class="ric-list" id="ric-lista"></div>
- 
- <!-- Pulsante nuova ricevuta -->
- <button class="btn-nuova-ric" id="btn-nuova-ric" onclick="toggleFormRic()">+ Nuova ricevuta</button>
- 
- <!-- Form nuova ricevuta -->
- <div class="ric-form" id="ric-form" style="display:none">
-   <h4>Nuova ricevuta</h4>
-   <div class="form-group">
-     <label>Data</label>
-     <input type="date" id="ric-data" />
-   </div>
-   <div class="form-group">
-     <label>Pagata con</label>
-     <div class="pagato-con-row">
-       <button class="pagato-con-btn" id="btn-conto" onclick="selezionaPagatoCon('conto')">🏦 Conto</button>
-       <button class="pagato-con-btn" id="btn-io" onclick="selezionaPagatoCon('io')">📱 APP IO</button>
-     </div>
-   </div>
-   <div class="form-group">
-     <label>Documento (PDF / Foto)</label>
-     <div class="upload-area" onclick="document.getElementById('ric-file-input').click()">
-       <input type="file" id="ric-file-input" accept=".pdf,.jpg,.jpeg,.png" onchange="handleRicFile(this)" style="display:none" />
-       <div class="upload-area-text" id="upload-area-text">📎 <span>Scegli file</span><br><small>PDF, JPG, PNG (max 5MB)</small></div>
-     </div>
-   </div>
-   <div class="form-group">
-     <label>Nome documento (facoltativo)</label>
-     <input type="text" id="ric-filename" placeholder="es. Ricevuta gennaio 2026" autocomplete="off" />
-   </div>
-   <button class="btn-salva-ric" onclick="salvaRicevuta()">Salva ricevuta</button>
- </div>
- 
- <button class="btn-cancel" onclick="closeModalRic()">Chiudi</button>
-</div>
-</div>
- 
-<!-- VISUALIZZATORE FILE INTERNO -->
-<div id="file-viewer-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:500;flex-direction:column;">
- <div style="display:flex;justify-content:space-between;align-items:center;padding:calc(16px + var(--safe-top)) 16px 12px;background:#1a1713;">
-   <span id="file-viewer-title" style="color:white;font-size:15px;font-weight:500;font-family:'DM Sans',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80%"></span>
-   <button onclick="chiudiFileViewer()" style="background:rgba(255,255,255,0.15);border:none;color:white;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;padding:8px 16px;border-radius:20px;cursor:pointer;">✕ Chiudi</button>
- </div>
- <div id="file-viewer-content" style="flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;padding:8px;"></div>
-</div>
- 
-<!-- MODAL PAGAMENTO SPESE -->
-<div class="pagamento-overlay" id="pagamento-overlay">
- <div class="pagamento-box">
-   <h3>Data di pagamento</h3>
-   <p>Inserisci la data in cui hai pagato</p>
-   <input type="date" id="p-data" />
-   <div class="pagamento-btns">
-     <button class="btn-annulla-pag" onclick="chiudiPagamento()">Annulla</button>
-     <button class="btn-conferma" onclick="confermaPagamento()">Conferma</button>
-   </div>
- </div>
-</div>
- 
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
- 
+import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 const firebaseConfig = {
  apiKey: "AIzaSyBFzRfzZUUNSSJ3w08zG1K08aMpTpSJ0zI",
  authDomain: "spese-conto-d1775.firebaseapp.com",
@@ -315,506 +169,208 @@ const firebaseConfig = {
  appId: "1:989458136531:web:7bdcc52b4e0bc9de2ac326",
  measurementId: "G-SLKWTVHZD6"
 };
- 
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const speseRef = collection(db, "spese");
-const ricevuteRef = collection(db, "ricevute");
- 
-// ===== STATO GLOBALE =====
-window._spese = [];
-window._tabAttivo = 'tutte';
-window._filtroAttivo = 'tutte';
-window._pagataToggle = false;
-window._fileAllegato = null;
-window._editId = null;
-window._pagamentoId = null;
- 
-// Ricevute
-window._ricCategoria = null; // categoria attiva nel modale
-window._ricevute = {}; // { categoria: [lista] }
-window._ricPagatoCon = null;
-window._ricFileUpload = null; // file selezionato
-window._ricFileUrl = null; // url dopo upload
-window._ricFileName = null;
-window._ricFormOpen = false;
-window._editRicId = null;
- 
-const CATEGORIE_RIC = [
- { id: 'donna', nome: 'Ricevute Donna di Servizio', emoji: '🧹' },
- { id: 'casa', nome: 'Ricevute Condominio Casa', emoji: '🏠' },
- { id: 'montagna', nome: 'Ricevute Condominio Montagna', emoji: '⛰️' },
- { id: 'tari', nome: 'Ricevute TARI', emoji: '🗑️' },
- { id: 'imu', nome: 'Ricevute IMU', emoji: '🏛️' },
-];
- 
-// ===== SYNC STATUS =====
+const specialistiRef = collection(db, "med_specialisti");
+const esamiRef = collection(db, "med_esami");
+
+window._specialisti = [];
+window._esami = {};
+window._specialistaAttivo = null;
+window._currentFiles = [];
+window._editEsameId = null;
+
+// SYNC STATUS
 function setSyncStatus(stato, testo) {
- document.getElementById('sync-dot').className = 'sync-dot ' + stato;
- document.getElementById('sync-text').textContent = testo;
+    document.getElementById('sync-dot').className = 'sync-dot ' + stato;
+    document.getElementById('sync-text').textContent = testo;
 }
- 
-function oggi() { return new Date().toISOString().split('T')[0]; }
-function isScaduta(s) { return !s.pagata && s.scadenza && s.scadenza < oggi(); }
-function isInScadenza(s) {
- if (s.pagata || !s.scadenza) return false;
- var diff = (new Date(s.scadenza) - new Date()) / (1000*60*60*24);
- return diff >= 0 && diff <= 7;
-}
-function fmt(n) { return '€' + Number(n).toLocaleString('it-IT', {minimumFractionDigits:2, maximumFractionDigits:2}); }
-function fmtDate(d) { if (!d) return ''; var p = d.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
-function esc(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
- 
-// ===== SPESE LISTENER =====
-onSnapshot(speseRef, function(snapshot) {
- window._spese = [];
- snapshot.forEach(function(docSnap) {
-   var d = docSnap.data(); d.id = docSnap.id;
-   window._spese.push(d);
- });
- setSyncStatus('ok', 'Sincronizzato');
- renderLista();
-}, function(error) {
- setSyncStatus('err', 'Errore connessione');
- console.error(error);
+
+// LISTENERS
+onSnapshot(specialistiRef, (snap) => {
+    window._specialisti = snap.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (a.ordine||0)-(b.ordine||0));
+    setSyncStatus('ok', 'Sincronizzato');
+    renderSpecialisti();
 });
- 
-// ===== RICEVUTE LISTENER =====
-onSnapshot(ricevuteRef, function(snapshot) {
- window._ricevute = {};
- CATEGORIE_RIC.forEach(function(c) { window._ricevute[c.id] = []; });
- snapshot.forEach(function(docSnap) {
-   var d = docSnap.data(); d.id = docSnap.id;
-   if (window._ricevute[d.categoria]) window._ricevute[d.categoria].push(d);
- });
- // ordina per data desc
- CATEGORIE_RIC.forEach(function(c) {
-   window._ricevute[c.id].sort(function(a,b){ return (b.data||'') > (a.data||'') ? 1 : -1; });
- });
- renderRicevuteGrid();
- if (window._ricCategoria) renderRicLista();
-}, function(err) { console.error(err); });
- 
-// ===== TAB =====
-window.switchTab = function(tab) {
- window._tabAttivo = tab;
- ['tutte','casa1','montagna','ricevute'].forEach(function(t) {
-   document.getElementById('tab-'+t).classList.toggle('active', t === tab);
- });
- var isRic = tab === 'ricevute';
- document.getElementById('section-spese').style.display = isRic ? 'none' : 'block';
- document.getElementById('section-ricevute').style.display = isRic ? 'block' : 'none';
- document.getElementById('fab-nuova').style.display = isRic ? 'none' : 'block';
- if (!isRic) renderLista();
-};
- 
-// ===== RENDER RICEVUTE GRID =====
-function renderRicevuteGrid() {
- var el = document.getElementById('ricevute-grid');
- if (!el) return;
- el.innerHTML = CATEGORIE_RIC.map(function(c) {
-   var count = (window._ricevute[c.id] || []).length;
-   return '<div class="ricevuta-categoria" onclick="openModalRic(\'' + c.id + '\')">'
-     + '<div class="ricevuta-categoria-left">'
-     + '<div class="ricevuta-categoria-nome">' + c.emoji + ' ' + c.nome + '</div>'
-     + '<div class="ricevuta-categoria-count">' + (count > 0 ? count + ' ricevut' + (count===1?'a':'e') : 'Nessuna ricevuta') + '</div>'
-     + '</div>'
-     + '<div class="ricevuta-categoria-arrow">›</div>'
-     + '</div>';
- }).join('');
+
+onSnapshot(esamiRef, (snap) => {
+    window._esami = {};
+    snap.docs.forEach(d => {
+        const x = {id:d.id, ...d.data()};
+        if(!window._esami[x.specialistaId]) window._esami[x.specialistaId] = [];
+        window._esami[x.specialistaId].push(x);
+    });
+    if(window._specialistaAttivo) renderEsamiLista();
+    renderSpecialisti();
+});
+
+// RENDER
+function renderSpecialisti() {
+    const el = document.getElementById('specialisti-grid');
+    el.innerHTML = window._specialisti.map(s => {
+        const count = (window._esami[s.id] || []).length;
+        return `<div class="specialista-card" onclick="openModalEsami('${s.id}')">
+            <div class="specialista-left">
+                <div class="specialista-emoji">${s.emoji}</div>
+                <div>
+                    <div class="specialista-nome">${s.nome}</div>
+                    <div class="specialista-count">${count} documenti</div>
+                </div>
+            </div>
+            <div class="specialista-arrow">›</div>
+        </div>`;
+    }).join('');
 }
- 
-// ===== MODAL RICEVUTE =====
-window.openModalRic = function(categoriaId) {
- window._ricCategoria = categoriaId;
- window._ricFormOpen = false;
- window._editRicId = null;
- window._ricPagatoCon = null;
- window._ricFileBase64 = null;
- window._ricFileName = null;
- var cat = CATEGORIE_RIC.find(function(c){ return c.id === categoriaId; });
- document.getElementById('modal-ric-title').textContent = cat ? cat.emoji + ' ' + cat.nome : 'Ricevute';
- document.getElementById('ric-form').style.display = 'none';
- document.getElementById('btn-nuova-ric').textContent = '+ Nuova ricevuta';
- document.getElementById('ric-data').value = oggi();
- document.getElementById('ric-filename').value = '';
- document.getElementById('upload-area-text').innerHTML = '📎 <span>Scegli file</span><br><small>PDF, JPG, PNG (max 5MB)</small>';
- document.getElementById('btn-conto').className = 'pagato-con-btn';
- document.getElementById('btn-io').className = 'pagato-con-btn';
- renderRicLista();
- document.getElementById('modal-ric-overlay').classList.add('open');
+
+window.openModalEsami = function(id) {
+    window._specialistaAttivo = id;
+    const s = window._specialisti.find(x => x.id === id);
+    document.getElementById('modal-esami-title').textContent = s ? s.emoji + ' ' + s.nome : 'Esami';
+    renderEsamiLista();
+    document.getElementById('modal-esami-overlay').classList.add('open');
 };
- 
-window.closeModalRic = function() {
- document.getElementById('modal-ric-overlay').classList.remove('open');
- window._ricCategoria = null;
+
+window.closeModalEsami = function() {
+    document.getElementById('modal-esami-overlay').classList.remove('open');
+    window._specialistaAttivo = null;
+    toggleFormEsame(false);
 };
- 
-window.overlayClickRic = function(e) {
- if (e.target === document.getElementById('modal-ric-overlay')) window.closeModalRic();
+
+window.renderEsamiLista = function() {
+    const lista = window._esami[window._specialistaAttivo] || [];
+    const el = document.getElementById('esami-lista');
+    if(!lista.length) { el.innerHTML = '<p style="text-align:center; padding:20px; color:#666;">Nessun documento.</p>'; return; }
+    
+    el.innerHTML = lista.map(e => {
+        let filesHtml = "";
+        if (e.files) {
+            filesHtml = e.files.map((f, i) => `<span class="esame-file-link" onclick="viewFile('${e.id}', ${i})">📎 ${f.name}</span>`).join('');
+        }
+        return `<div class="esame-item">
+            <div class="esame-tipo">${e.tipo}</div>
+            <div style="font-size:12px; color:#666;">Data: ${e.data} | Medico: ${e.medico || '-'}</div>
+            ${filesHtml}
+            <div class="esame-actions">
+                <button class="btn-small" onclick="modificaEsame('${e.id}')">Modifica</button>
+                <button class="btn-small danger" onclick="eliminaEsame('${e.id}')">Elimina</button>
+            </div>
+        </div>`;
+    }).join('');
 };
- 
-function renderRicLista() {
- var lista = window._ricevute[window._ricCategoria] || [];
- var el = document.getElementById('ric-lista');
- if (!lista.length) {
-   el.innerHTML = '<div class="empty" style="padding:24px 0"><div class="empty-icon">🧾</div><p>Nessuna ricevuta</p></div>';
-   return;
- }
- el.innerHTML = lista.map(function(r) {
-   var pagatoLabel = r.pagatoCon === 'conto' ? '🏦 Pagata dal conto' : '📱 APP IO';
-   var pagatoClass = r.pagatoCon === 'conto' ? 'conto' : 'io';
-   return '<div class="ric-item">'
-     + '<div class="ric-item-top">'
-     + '<div>'
-     + '<div class="ric-item-data">📅 ' + fmtDate(r.data) + '</div>'
-     + '<div class="ric-item-pagato ' + pagatoClass + '">' + pagatoLabel + '</div>'
-     + (r.fileBase64 ? '<div class="ric-item-foto" onclick="apriFile(\'' + r.id + '\')">📎 ' + esc(r.fileName||'Documento') + '</div>' : (r.fileUrl ? '<div class="ric-item-foto" onclick="window.open(\'' + esc(r.fileUrl) + '\',\'_blank\')">📎 ' + esc(r.fileName||'Documento') + '</div>' : ''))
-     + '</div>'
-     + '<div style="display:flex;gap:6px">'
-     + '<button class="btn-small" style="padding:6px 10px;font-size:11px" onclick="modificaRicevuta(\'' + r.id + '\')">Modifica</button>'
-     + '<button class="btn-small danger" style="padding:6px 10px;font-size:11px" onclick="eliminaRicevuta(\'' + r.id + '\')">Elimina</button>'
-     + '</div>'
-     + '</div>'
-     + '</div>';
- }).join('');
+
+// GESTIONE FILES
+window.handleEsameFiles = function(input) {
+    const files = Array.from(input.files);
+    files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            window._currentFiles.push({ name: file.name, base64: e.target.result });
+            updatePreview();
+        };
+        reader.readAsDataURL(file);
+    });
+};
+
+function updatePreview() {
+    const list = document.getElementById('file-preview-list');
+    list.innerHTML = window._currentFiles.map((f, i) => `
+        <div class="file-preview-item">
+            <span>${f.name}</span>
+            <span class="remove-file" onclick="window._currentFiles.splice(${i},1); updatePreview();">X</span>
+        </div>
+    `).join('');
 }
- 
-window.toggleFormRic = function() {
- window._ricFormOpen = !window._ricFormOpen;
- window._editRicId = null;
- document.getElementById('ric-form').style.display = window._ricFormOpen ? 'block' : 'none';
- document.getElementById('btn-nuova-ric').textContent = window._ricFormOpen ? '✕ Annulla' : '+ Nuova ricevuta';
- document.getElementById('ric-form').querySelector('h4').textContent = 'Nuova ricevuta';
- if (window._ricFormOpen) {
-   document.getElementById('ric-data').value = oggi();
-   window._ricPagatoCon = null;
-   window._ricFileBase64 = null;
-   window._ricFileName = null;
-   document.getElementById('btn-conto').className = 'pagato-con-btn';
-   document.getElementById('btn-io').className = 'pagato-con-btn';
-   document.getElementById('ric-file-input').value = '';
-   document.getElementById('ric-filename').value = '';
-   document.getElementById('upload-area-text').innerHTML = '📎 <span>Scegli file</span><br><small>PDF, JPG, PNG (max 5MB)</small>';
-   document.getElementById('ric-file-input').closest('.upload-area').classList.remove('has-file');
- }
+
+window.salvaEsame = async function() {
+    const tipo = document.getElementById('e-tipo').value;
+    const data = document.getElementById('e-data').value;
+    if(!tipo || !data) return alert("Inserisci tipo e data");
+
+    // Calcolo dimensione stimata
+    const size = JSON.stringify(window._currentFiles).length;
+    if(size > 1000000) return alert("File troppo grandi per il database (Max 1MB totale). Carica file più piccoli.");
+
+    setSyncStatus('loading', 'Salvataggio...');
+    const payload = {
+        specialistaId: window._specialistaAttivo,
+        tipo, data, 
+        medico: document.getElementById('e-medico').value,
+        note: document.getElementById('e-note').value,
+        files: window._currentFiles,
+        updatedAt: serverTimestamp()
+    };
+
+    try {
+        if(window._editEsameId) {
+            await updateDoc(doc(db, "med_esami", window._editEsameId), payload);
+        } else {
+            await addDoc(esamiRef, payload);
+        }
+        toggleFormEsame(false);
+    } catch(err) {
+        alert("Errore nel salvataggio. Forse i file sono troppo grandi.");
+        console.error(err);
+    }
 };
- 
-window.handleRicFile = function(input) {
- if (!input.files[0]) return;
- var file = input.files[0];
- if (file.size > 5 * 1024 * 1024) { alert('File troppo grande! Massimo 5MB.'); input.value = ''; return; }
- var reader = new FileReader();
- reader.onload = function(e) {
-   window._ricFileBase64 = e.target.result;
-   window._ricFileName = file.name;
-   var area = document.getElementById('upload-area-text');
-   area.innerHTML = '✅ <span>' + file.name + '</span>';
-   document.getElementById('ric-file-input').closest('.upload-area').classList.add('has-file');
-   if (!document.getElementById('ric-filename').value) {
-     document.getElementById('ric-filename').value = file.name.replace(/\.[^.]+$/, '');
-   }
- };
- reader.readAsDataURL(file);
+
+window.viewFile = function(esameId, fileIdx) {
+    const e = (window._esami[window._specialistaAttivo] || []).find(x => x.id === esameId);
+    const file = e.files[fileIdx];
+    const content = document.getElementById('file-viewer-content');
+    document.getElementById('file-viewer-title').textContent = file.name;
+    
+    if(file.base64.includes("pdf")) {
+        content.innerHTML = `<iframe src="${file.base64}" style="width:100%; height:80vh; border:none;"></iframe>`;
+    } else {
+        content.innerHTML = `<img src="${file.base64}" style="max-width:100%; border-radius:10px;">`;
+    }
+    document.getElementById('file-viewer-overlay').style.display = 'flex';
 };
- 
-window.selezionaPagatoCon = function(val) {
- window._ricPagatoCon = val;
- document.getElementById('btn-conto').className = 'pagato-con-btn' + (val === 'conto' ? ' selected-conto' : '');
- document.getElementById('btn-io').className = 'pagato-con-btn' + (val === 'io' ? ' selected-io' : '');
+
+window.chiudiFileViewer = () => { document.getElementById('file-viewer-overlay').style.display = 'none'; };
+
+window.toggleFormEsame = function(show) {
+    window._esameFormOpen = (show !== undefined) ? show : !window._esameFormOpen;
+    document.getElementById('esame-form').style.display = window._esameFormOpen ? 'block' : 'none';
+    if(!window._esameFormOpen) {
+        window._editEsameId = null;
+        window._currentFiles = [];
+        document.getElementById('e-tipo').value = "";
+        updatePreview();
+    }
 };
- 
- 
-window.modificaRicevuta = function(id) {
- var r = (window._ricevute[window._ricCategoria] || []).find(function(x){ return x.id === id; });
- if (!r) return;
- window._editRicId = id;
- window._ricFormOpen = true;
- window._ricPagatoCon = r.pagatoCon || null;
- window._ricFileBase64 = r.fileBase64 || null;
- window._ricFileName = r.fileName || null;
- document.getElementById('ric-form').style.display = 'block';
- document.getElementById('ric-form').querySelector('h4').textContent = 'Modifica ricevuta';
- document.getElementById('btn-nuova-ric').textContent = '✕ Annulla';
- document.getElementById('ric-data').value = r.data || '';
- document.getElementById('ric-filename').value = r.fileName || '';
- document.getElementById('btn-conto').className = 'pagato-con-btn' + (r.pagatoCon === 'conto' ? ' selected-conto' : '');
- document.getElementById('btn-io').className = 'pagato-con-btn' + (r.pagatoCon === 'io' ? ' selected-io' : '');
- var area = document.getElementById('upload-area-text');
- if (r.fileName) {
-   area.innerHTML = '✅ <span>' + r.fileName + '</span>';
-   document.getElementById('ric-file-input').closest('.upload-area').classList.add('has-file');
- } else if (r.fileUrl) {
-   area.innerHTML = '🔗 <span>Link esistente</span>';
-   document.getElementById('ric-file-input').closest('.upload-area').classList.add('has-file');
- } else {
-   area.innerHTML = '📎 <span>Scegli file</span><br><small>PDF, JPG, PNG (max 5MB)</small>';
-   document.getElementById('ric-file-input').closest('.upload-area').classList.remove('has-file');
- }
- document.getElementById('ric-file-input').value = '';
- document.getElementById('ric-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+window.modificaEsame = function(id) {
+    const e = (window._esami[window._specialistaAttivo] || []).find(x => x.id === id);
+    window._editEsameId = id;
+    document.getElementById('e-tipo').value = e.tipo;
+    document.getElementById('e-data').value = e.data;
+    document.getElementById('e-medico').value = e.medico;
+    document.getElementById('e-note').value = e.note;
+    window._currentFiles = e.files ? [...e.files] : [];
+    updatePreview();
+    toggleFormEsame(true);
 };
- 
-window.salvaRicevuta = async function() {
- var data = document.getElementById('ric-data').value;
- if (!data) { alert('Inserisci la data'); return; }
- if (!window._ricPagatoCon) { alert('Seleziona come è stata pagata'); return; }
- var fileName = document.getElementById('ric-filename').value.trim();
- setSyncStatus('loading', 'Salvataggio...');
- var dati = {
-   categoria: window._ricCategoria,
-   data: data,
-   pagatoCon: window._ricPagatoCon,
-   fileName: fileName || window._ricFileName || null,
-   fileBase64: window._ricFileBase64 || null,
- };
- if (window._editRicId) {
-   var existing = (window._ricevute[window._ricCategoria] || []).find(function(x){ return x.id === window._editRicId; });
-   if (!window._ricFileBase64) {
-     dati.fileBase64 = existing ? (existing.fileBase64 || null) : null;
-     dati.fileUrl = existing ? (existing.fileUrl || null) : null;
-   }
-   await updateDoc(doc(db, "ricevute", window._editRicId), dati);
- } else {
-   dati.timestamp = serverTimestamp();
-   await addDoc(ricevuteRef, dati);
- }
- window._editRicId = null;
- window._ricFileBase64 = null;
- window.toggleFormRic();
+
+window.eliminaEsame = async (id) => { if(confirm("Elimina?")) await deleteDoc(doc(db, "med_esami", id)); };
+
+// FUNZIONI SPECIALISTA (LOGICA BASE)
+window.openNuovoSpecialista = () => { 
+    document.getElementById('modal-spec-overlay').classList.add('open');
+    const row = document.getElementById('emoji-row');
+    row.innerHTML = ['🩺','❤️','🦷','👁️','🧠','💊'].map(em => `<span class="emoji-opt" onclick="window._selEmoji='${em}'; document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel')); this.classList.add('sel');">${em}</span>`).join('');
 };
- 
-window.eliminaRicevuta = async function(id) {
- if (!confirm('Eliminare questa ricevuta?')) return;
- await deleteDoc(doc(db, "ricevute", id));
+window.closeNuovoSpecialista = () => document.getElementById('modal-spec-overlay').classList.remove('open');
+window.salvaSpecialista = async () => {
+    const nome = document.getElementById('spec-nome').value;
+    if(!nome) return;
+    await addDoc(specialistiRef, { nome, emoji: window._selEmoji || '🩺', ordine: window._specialisti.length });
+    closeNuovoSpecialista();
 };
- 
-window.apriFile = function(id) {
- var r = (window._ricevute[window._ricCategoria] || []).find(function(x){ return x.id === id; });
- if (!r) return;
- var overlay = document.getElementById('file-viewer-overlay');
- var content = document.getElementById('file-viewer-content');
- var title = document.getElementById('file-viewer-title');
- title.textContent = r.fileName || 'Documento';
- content.innerHTML = '';
- if (r.fileBase64) {
-   if (r.fileBase64.startsWith('data:application/pdf')) {
-     content.innerHTML = '<iframe src="' + r.fileBase64 + '" style="width:100%;height:100%;min-height:80vh;border:none;border-radius:8px;"></iframe>';
-   } else {
-     content.innerHTML = '<img src="' + r.fileBase64 + '" style="max-width:100%;max-height:85vh;border-radius:8px;object-fit:contain;">';
-   }
- } else if (r.fileUrl) {
-   content.innerHTML = '<iframe src="' + r.fileUrl + '" style="width:100%;height:100%;min-height:80vh;border:none;border-radius:8px;"></iframe>';
- }
- overlay.style.display = 'flex';
-};
- 
-window.chiudiFileViewer = function() {
- document.getElementById('file-viewer-overlay').style.display = 'none';
- document.getElementById('file-viewer-content').innerHTML = '';
-};
- 
-// ===== SPESE =====
-window.marcaPagata = function(id) {
- window._pagamentoId = id;
- document.getElementById('p-data').value = oggi();
- document.getElementById('pagamento-overlay').classList.add('open');
-};
- 
-window.chiudiPagamento = function() {
- document.getElementById('pagamento-overlay').classList.remove('open');
- window._pagamentoId = null;
-};
- 
-window.confermaPagamento = async function() {
- var data = document.getElementById('p-data').value;
- if (!data) { alert('Inserisci la data di pagamento'); return; }
- setSyncStatus('loading', 'Salvataggio...');
- await updateDoc(doc(db, "spese", window._pagamentoId), { pagata: true, dataPagamento: data });
- window.chiudiPagamento();
-};
- 
-window.marcaNonPagata = async function(id) {
- setSyncStatus('loading', 'Salvataggio...');
- await updateDoc(doc(db, "spese", id), { pagata: false, dataPagamento: null });
-};
- 
-window.eliminaSpesa = async function(id) {
- if (confirm('Eliminare questa spesa?')) await deleteDoc(doc(db, "spese", id));
-};
- 
-window.editSpesa = function(id) { window.openModal(id); };
- 
-window.saveSpesa = async function() {
- var nome = document.getElementById('f-nome').value.trim();
- var importo = document.getElementById('f-importo').value;
- var iban = document.getElementById('f-iban').value.trim();
- var immobile = document.getElementById('f-immobile').value;
- var scadenza = document.getElementById('f-scadenza').value;
- var dataPagamento = document.getElementById('f-data-pagamento').value || null;
- if (!nome || !importo) { alert('Inserisci almeno descrizione e importo'); return; }
- setSyncStatus('loading', 'Salvataggio...');
- if (window._editId) {
-   var existing = window._spese.find(function(x){return x.id===window._editId;}) || {};
-   await updateDoc(doc(db, "spese", window._editId), {
-     nome: nome, importo: parseFloat(importo), iban: iban,
-     immobile: immobile, scadenza: scadenza, pagata: window._pagataToggle,
-     dataPagamento: window._pagataToggle ? (dataPagamento || existing.dataPagamento || null) : null,
-     fileName: window._fileAllegato ? window._fileAllegato.name : (existing.fileName || null)
-   });
- } else {
-   await addDoc(speseRef, {
-     nome: nome, importo: parseFloat(importo), iban: iban,
-     immobile: immobile, scadenza: scadenza, pagata: window._pagataToggle,
-     dataPagamento: window._pagataToggle ? (dataPagamento || null) : null,
-     fileName: window._fileAllegato ? window._fileAllegato.name : null,
-     creata: oggi(), timestamp: serverTimestamp()
-   });
- }
- window.closeModal();
-};
- 
-function renderLista() {
- var lista = window._spese.slice();
- if (window._tabAttivo === 'casa1') lista = lista.filter(function(s){ return s.immobile === 'casa1'; });
- else if (window._tabAttivo === 'montagna') lista = lista.filter(function(s){ return s.immobile === 'montagna'; });
- if (window._filtroAttivo === 'pagate') lista = lista.filter(function(s){ return s.pagata; });
- else if (window._filtroAttivo === 'nonpagate') lista = lista.filter(function(s){ return !s.pagata; });
- else if (window._filtroAttivo === 'scadute') lista = lista.filter(function(s){ return isScaduta(s); });
- lista.sort(function(a,b) {
-   var da = a.scadenza || '9999'; var db2 = b.scadenza || '9999';
-   return da < db2 ? -1 : da > db2 ? 1 : 0;
- });
- var listaTab = window._tabAttivo === 'tutte' ? window._spese : window._spese.filter(function(s){ return s.immobile === window._tabAttivo; });
- var totale = 0, pagato = 0, nonpagato = 0, inScad = 0;
- listaTab.forEach(function(s) {
-   var imp = parseFloat(s.importo) || 0; totale += imp;
-   if (s.pagata) pagato += imp; else nonpagato += imp;
-   if (isScaduta(s) || isInScadenza(s)) inScad++;
- });
- document.getElementById('tot-totale').textContent = fmt(totale);
- document.getElementById('tot-pagato').textContent = fmt(pagato);
- document.getElementById('tot-nonpagato').textContent = fmt(nonpagato);
- document.getElementById('tot-scadenza').textContent = inScad;
- var el = document.getElementById('lista-spese');
- if (!lista.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Nessuna spesa trovata</p></div>'; return; }
- el.innerHTML = lista.map(function(s) {
-   var scad = isScaduta(s); var vicina = isInScadenza(s);
-   return '<div class="spesa-card' + (scad ? ' scaduta' : '') + '">'
-     + '<div class="spesa-top"><div class="spesa-nome">' + esc(s.nome) + '</div>'
-     + '<div class="spesa-importo">' + fmt(s.importo) + '</div></div>'
-     + '<div class="spesa-meta">'
-     + '<span class="badge ' + s.immobile + '">' + (s.immobile === 'casa1' ? 'Prima casa' : 'Montagna') + '</span>'
-     + '<span class="badge ' + (s.pagata ? 'pagata' : 'nonpagata') + '">' + (s.pagata ? 'Pagata' : 'Da pagare') + '</span>'
-     + (s.scadenza ? '<span class="spesa-date">Scad. ' + fmtDate(s.scadenza) + '</span>' : '')
-     + '</div>'
-     + (s.pagata && s.dataPagamento ? '<div class="spesa-pagata-date">✓ Pagata il ' + fmtDate(s.dataPagamento) + '</div>' : '')
-     + (s.iban ? '<div class="spesa-iban">IBAN <span>' + esc(s.iban) + '</span></div>' : '')
-     + (scad ? '<div class="scadenza-warning">⚠ Scadenza superata</div>' : '')
-     + (vicina ? '<div class="scadenza-warning">⚠ Scade entro 7 giorni</div>' : '')
-     + (s.fileName ? '<div class="spesa-attach">📎 ' + esc(s.fileName) + '</div>' : '')
-     + '<div class="spesa-actions">'
-     + (!s.pagata ? '<button class="btn-small success" onclick="marcaPagata(\'' + s.id + '\')">Segna pagata</button>'
-                  : '<button class="btn-small" onclick="marcaNonPagata(\'' + s.id + '\')">Non pagata</button>')
-     + '<button class="btn-small" onclick="editSpesa(\'' + s.id + '\')">Modifica</button>'
-     + '<button class="btn-small danger" onclick="eliminaSpesa(\'' + s.id + '\')">Elimina</button>'
-     + '</div></div>';
- }).join('');
-}
- 
-window.setFilter = function(f) {
- window._filtroAttivo = f;
- ['tutte','pagate','nonpagate','scadute'].forEach(function(x) {
-   document.getElementById('f-'+x).classList.toggle('active', x === f);
- });
- renderLista();
-};
- 
-window.openModal = function(id) {
- window._editId = id || null;
- window._pagataToggle = false;
- window._fileAllegato = null;
- document.getElementById('attach-name').textContent = '';
- document.getElementById('iban-hint').textContent = 'Facoltativo';
- document.getElementById('iban-hint').className = 'hint';
- document.getElementById('modal-title').textContent = id ? 'Modifica spesa' : 'Nuova spesa';
- document.getElementById('group-data-pagamento').style.display = 'none';
- document.getElementById('f-data-pagamento').value = '';
- if (id) {
-   var s = window._spese.find(function(x){return x.id===id;});
-   document.getElementById('f-nome').value = s.nome;
-   document.getElementById('f-importo').value = s.importo;
-   document.getElementById('f-iban').value = s.iban || '';
-   document.getElementById('f-immobile').value = s.immobile;
-   document.getElementById('f-scadenza').value = s.scadenza || '';
-   window._pagataToggle = s.pagata;
-   if (s.pagata) {
-     document.getElementById('group-data-pagamento').style.display = 'block';
-     document.getElementById('f-data-pagamento').value = s.dataPagamento || '';
-   }
-   if (s.fileName) document.getElementById('attach-name').textContent = '📎 ' + s.fileName;
- } else {
-   document.getElementById('f-nome').value = '';
-   document.getElementById('f-importo').value = '';
-   document.getElementById('f-iban').value = '';
-   document.getElementById('f-immobile').value = window._tabAttivo !== 'tutte' && window._tabAttivo !== 'ricevute' ? window._tabAttivo : 'casa1';
-   document.getElementById('f-scadenza').value = '';
- }
- document.getElementById('toggle-pagata').className = 'toggle' + (window._pagataToggle ? ' on' : '');
- document.getElementById('modal-overlay').classList.add('open');
-};
- 
-window.closeModal = function() {
- document.getElementById('modal-overlay').classList.remove('open');
- window._editId = null;
-};
- 
-window.overlayClick = function(e) {
- if (e.target === document.getElementById('modal-overlay')) window.closeModal();
-};
- 
-window.togglePagata = function() {
- window._pagataToggle = !window._pagataToggle;
- document.getElementById('toggle-pagata').className = 'toggle' + (window._pagataToggle ? ' on' : '');
- var grp = document.getElementById('group-data-pagamento');
- grp.style.display = window._pagataToggle ? 'block' : 'none';
- if (window._pagataToggle) document.getElementById('f-data-pagamento').value = oggi();
- else document.getElementById('f-data-pagamento').value = '';
-};
- 
-window.handleFile = function(input) {
- if (input.files[0]) {
-   window._fileAllegato = { name: input.files[0].name };
-   document.getElementById('attach-name').textContent = '📎 ' + input.files[0].name;
- }
-};
- 
-window.formatIban = function(input) {
- var val = input.value.replace(/\s/g,'').toUpperCase().replace(/[^A-Z0-9]/g,'');
- var groups = val.match(/.{1,4}/g);
- input.value = groups ? groups.join(' ') : val;
- var hint = document.getElementById('iban-hint');
- if (!val) { hint.textContent = 'Facoltativo'; hint.className = 'hint'; return; }
- if (val.length < 15) { hint.textContent = 'IBAN troppo corto'; hint.className = 'hint invalid'; return; }
- var rear = val.slice(4) + val.slice(0,4);
- var num = rear.split('').map(function(c){ return isNaN(c) ? (c.charCodeAt(0)-55).toString() : c; }).join('');
- var rem = 0;
- for (var i = 0; i < num.length; i++) rem = (rem * 10 + parseInt(num[i])) % 97;
- if (rem === 1) { hint.textContent = 'IBAN valido ✓'; hint.className = 'hint valid'; }
- else { hint.textContent = 'IBAN non valido — controlla i dati'; hint.className = 'hint invalid'; }
-};
+
+window.overlayClickEsami = (e) => { if(e.target.id === 'modal-esami-overlay') closeModalEsami(); };
 </script>
+
 </body>
 </html>
- 
-
-
-
-
-
-
-
-
-
-
-
